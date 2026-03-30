@@ -40,8 +40,32 @@ export function CampusMap() {
     setRouteData,
   } = useNavigationStore();
 
-  const bearing = navSteps[0]?.maneuver.bearing_after ?? 0;
+  const firstStepBearing = navSteps[0]?.maneuver.bearing_after ?? 0;
   const isAR = viewMode === "ar-simulation";
+
+  // Track live map bearing in AR mode so the arrow always points toward destination
+  const [mapBearing, setMapBearing] = useState(0);
+  useEffect(() => {
+    if (viewMode !== "ar-simulation") return;
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    const update = () => setMapBearing(map.getBearing());
+    update();
+    map.on("rotate", update);
+    return () => { map.off("rotate", update); };
+  }, [viewMode]);
+
+  const dest = CAMPUS_LOCATIONS.find((l) => l.id === selectedDestination);
+  const destBearing = dest
+    ? calculateBearing(COLLEGE_GATE.lat, COLLEGE_GATE.lng, dest.lat, dest.lng)
+    : 0;
+
+  // Mode 3: map is already rotated to firstStepBearing, so arrow = 0° (points forward/up).
+  // Mode 4: arrow points toward destination relative to current camera bearing.
+  const arrowBearing =
+    viewMode === "ar-simulation"   ? destBearing - mapBearing :
+    viewMode === "turn-by-turn"    ? 0 :
+    0;
 
   // 360° look-around for AR mode
   useARControls(mapRef, isAR);
@@ -141,6 +165,7 @@ export function CampusMap() {
     if (viewMode === "2d-map") {
       map.easeTo({ pitch: 0, bearing: 0, zoom: 15, duration: 1500 });
       try { map.setFog({}); } catch { /* ignore */ }
+      try { map.setTerrain(null); } catch { /* ignore */ }
       map.dragPan.enable();
       map.scrollZoom.enable();
     } else if (viewMode === "route-overview" && dest) {
@@ -148,6 +173,8 @@ export function CampusMap() {
         COLLEGE_GATE.lat, COLLEGE_GATE.lng,
         dest.lat, dest.lng
       );
+      try { map.setTerrain(null); } catch { /* ignore */ }
+      try { map.setFog({}); } catch { /* ignore */ }
       map.fitBounds(
         [
           [Math.min(COLLEGE_GATE.lng, dest.lng), Math.min(COLLEGE_GATE.lat, dest.lat)],
@@ -160,11 +187,16 @@ export function CampusMap() {
           duration: 1500,
         }
       );
-      try { map.setFog({}); } catch { /* ignore */ }
       map.dragPan.enable();
       map.scrollZoom.enable();
     } else if (viewMode === "turn-by-turn") {
-      const firstBearing = navSteps[0]?.maneuver.bearing_after ?? 0;
+      const firstBearing = firstStepBearing;
+      // Set terrain before camera animation so it doesn't interrupt easeTo
+      if (!map.getSource("mapbox-dem")) {
+        map.addSource("mapbox-dem", { type: "raster-dem", url: "mapbox://mapbox.mapbox-terrain-dem-v1", tileSize: 512, maxzoom: 14 });
+      }
+      try { map.setTerrain({ source: "mapbox-dem", exaggeration: 1.5 }); } catch { /* ignore */ }
+      try { map.setFog({}); } catch { /* ignore */ }
       map.easeTo({
         pitch: 60,
         bearing: firstBearing,
@@ -172,18 +204,33 @@ export function CampusMap() {
         center: [COLLEGE_GATE.lng, COLLEGE_GATE.lat],
         duration: 2000,
       });
-      try { map.setFog({}); } catch { /* ignore */ }
       map.dragPan.enable();
       map.scrollZoom.enable();
       toast.info("Turn-by-turn navigation");
     } else if (viewMode === "ar-simulation") {
+      // No terrain in AR mode: MercatorCoordinate altitude is above sea level, and
+      // terrain exaggeration would push the ground mesh above the camera at 1.7 m.
+      try { map.setTerrain(null); } catch { /* ignore */ }
+      map.setFog(arFog);
       map.easeTo({
         pitch: 85,
         zoom: 20,
         center: [COLLEGE_GATE.lng, COLLEGE_GATE.lat],
         duration: 2500,
       });
-      map.setFog(arFog);
+      // After the zoom/pitch animation, snap the camera to true eye level (1.7 m).
+      // setFreeCameraOptions is instantaneous — doing it inside moveend avoids a
+      // jarring mid-animation jump.
+      map.once("moveend", () => {
+        const position = mapboxgl.MercatorCoordinate.fromLngLat(
+          [COLLEGE_GATE.lng, COLLEGE_GATE.lat],
+          1.7
+        );
+        const cam = map.getFreeCameraOptions();
+        cam.position = position;
+        cam.setPitchBearing(85, map.getBearing());
+        map.setFreeCameraOptions(cam);
+      });
       map.dragPan.disable();
       map.scrollZoom.disable();
       toast.info("AR Simulation — look around to explore");
@@ -219,7 +266,7 @@ export function CampusMap() {
         <NavigationControl position="bottom-right" />
         <BuildingLayer />
         <RouteLayer />
-        <UserLocationMarker mode={viewMode} bearing={bearing} />
+        <UserLocationMarker mode={viewMode} bearing={arrowBearing} />
         {CAMPUS_LOCATIONS.map((loc) => (
           <DestinationPin
             key={loc.id}

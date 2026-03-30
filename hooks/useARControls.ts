@@ -2,6 +2,16 @@
 
 import { useEffect } from "react";
 import type { MapRef } from "react-map-gl/mapbox";
+import mapboxgl from "mapbox-gl";
+
+// Drive bearing through FreeCameraOptions so it stays consistent with the
+// eye-level position set in CampusMap (setFreeCameraOptions preserves position,
+// only the orientation changes).
+function setARBearing(map: mapboxgl.Map, bearing: number) {
+  const cam = map.getFreeCameraOptions();
+  cam.setPitchBearing(85, bearing);
+  map.setFreeCameraOptions(cam);
+}
 
 export function useARControls(
   mapRef: React.RefObject<MapRef | null>,
@@ -16,15 +26,30 @@ export function useARControls(
     const canvas = map.getCanvas();
     const mapInstance = map;
 
-    // Desktop: mouse position → bearing
+    // Desktop: click-and-drag → bearing
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartBearing = 0;
+
+    function onMouseDown(e: MouseEvent) {
+      isDragging = true;
+      dragStartX = e.clientX;
+      dragStartBearing = mapInstance.getBearing();
+      canvas.style.cursor = "grabbing";
+    }
     function onMouseMove(e: MouseEvent) {
-      const bearing = ((e.clientX / window.innerWidth) - 0.5) * 360;
-      mapInstance.setBearing(bearing);
+      if (!isDragging) return;
+      const delta = (e.clientX - dragStartX) / window.innerWidth * 360;
+      setARBearing(mapInstance, dragStartBearing - delta);
+    }
+    function onMouseUp() {
+      isDragging = false;
+      canvas.style.cursor = "grab";
     }
 
     // Mobile: device orientation → bearing
     function onDeviceOrientation(e: DeviceOrientationEvent) {
-      if (e.alpha !== null) mapInstance.setBearing(e.alpha);
+      if (e.alpha !== null) setARBearing(mapInstance, e.alpha);
     }
 
     // Touch: swipe left/right → bearing
@@ -36,16 +61,22 @@ export function useARControls(
     }
     function onTouchMove(e: TouchEvent) {
       const delta = (e.touches[0].clientX - touchStartX) / window.innerWidth * 360;
-      mapInstance.setBearing(startBearing - delta);
+      setARBearing(mapInstance, startBearing - delta);
     }
 
-    canvas.addEventListener("mousemove", onMouseMove);
+    canvas.style.cursor = "grab";
+    canvas.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
     canvas.addEventListener("touchstart", onTouchStart, { passive: true });
     canvas.addEventListener("touchmove", onTouchMove, { passive: true });
     window.addEventListener("deviceorientation", onDeviceOrientation);
 
     return () => {
-      canvas.removeEventListener("mousemove", onMouseMove);
+      canvas.style.cursor = "";
+      canvas.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
       canvas.removeEventListener("touchstart", onTouchStart);
       canvas.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("deviceorientation", onDeviceOrientation);
