@@ -53,7 +53,7 @@ export function NavigationInfoPanel() {
 
               {/* Action buttons — route-overview only */}
               {viewMode === "route-overview" && (
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={() => setViewMode("turn-by-turn")}
                     className="flex-1 flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl py-3 text-sm font-semibold transition-colors"

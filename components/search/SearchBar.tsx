@@ -13,7 +13,9 @@ export function SearchBar() {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const results = useSearch(query);
-  const { selectDestination, clearNavigation, selectedDestination } = useNavigationStore();
+  const { selectDestination, clearNavigation, selectedDestination, viewMode } = useNavigationStore();
+
+  if (viewMode === "ar-simulation") return null;
 
   // Close on outside click
   useEffect(() => {

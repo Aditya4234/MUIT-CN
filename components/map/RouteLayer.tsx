@@ -9,6 +9,7 @@ import { useNavigationStore } from "@/store/navigationStore";
 export function RouteLayer() {
   const { routeData, viewMode } = useNavigationStore();
   const isAR = viewMode === "ar-simulation";
+  const isTurnByTurn = viewMode === "turn-by-turn";
 
   // Buffer the route LineString into a 2 m-wide polygon for AR mode.
   // Computed once per route — not on every render.
@@ -16,7 +17,7 @@ export function RouteLayer() {
     if (!routeData) return null;
     const coords = routeData.geometry.coordinates as [number, number][];
     const line = lineString(coords);
-    return buffer(line, 0.002, { units: "kilometers", joinStyle: "round" });
+    return buffer(line, 0.002, { units: "kilometers" });
   }, [routeData]);
 
   if (!routeData) return null;
@@ -34,16 +35,16 @@ export function RouteLayer() {
             geometry: routeData.geometry,
           }}
         >
-          {/* Glow / shadow underneath */}
+          {/* Outer glow */}
           <Layer
             id="route-shadow"
             type="line"
             layout={{ "line-join": "round", "line-cap": "round" }}
             paint={{
               "line-color": "#4285F4",
-              "line-width": 10,
-              "line-opacity": 0.25,
-              "line-blur": 4,
+              "line-width": isTurnByTurn ? 18 : 10,
+              "line-opacity": isTurnByTurn ? 0.35 : 0.25,
+              "line-blur": isTurnByTurn ? 6 : 4,
             }}
           />
           {/* Main route line */}
@@ -52,9 +53,9 @@ export function RouteLayer() {
             type="line"
             layout={{ "line-join": "round", "line-cap": "round" }}
             paint={{
-              "line-color": "#4285F4",
-              "line-width": 5,
-              "line-opacity": 0.9,
+              "line-color": isTurnByTurn ? "#60a5fa" : "#4285F4",
+              "line-width": isTurnByTurn ? 7 : 5,
+              "line-opacity": 0.95,
             }}
           />
         </Source>

@@ -28,6 +28,7 @@ const STYLES = {
 export function CampusMap() {
   const mapRef = useRef<MapRef>(null);
   const arMarkersRef = useRef<mapboxgl.Marker[]>([]);
+  const transitioningRef = useRef(false);  // guard against rapid mode switches
   const [isSatellite, setIsSatellite] = useState(false);
   const [loadingRoute, setLoadingRoute] = useState(false);
 
@@ -160,6 +161,13 @@ export function CampusMap() {
     const map = mapRef.current?.getMap();
     if (!map || !routeData) return;
 
+    // Ignore if a transition is already in flight — prevents rapid-click queuing
+    if (transitioningRef.current) {
+      map.stop();  // cancel any in-progress easeTo
+    }
+    transitioningRef.current = true;
+    map.once("moveend", () => { transitioningRef.current = false; });
+
     const dest = CAMPUS_LOCATIONS.find((l) => l.id === selectedDestination);
 
     if (viewMode === "2d-map") {
@@ -263,7 +271,7 @@ export function CampusMap() {
         style={{ width: "100%", height: "100%" }}
         mapStyle={isSatellite ? STYLES.satellite : STYLES.street}
       >
-        <NavigationControl position="bottom-right" />
+        {!isAR && <NavigationControl position="bottom-right" />}
         <BuildingLayer />
         <RouteLayer />
         <UserLocationMarker mode={viewMode} bearing={arrowBearing} />

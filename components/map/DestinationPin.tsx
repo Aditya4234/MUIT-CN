@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Marker, Popup } from "react-map-gl/mapbox";
 import type { CampusLocation } from "@/types";
 import { COLLEGE_GATE } from "@/constants/locations";
 import { haversineDistance } from "@/utils/bearing";
 import { formatDistance } from "@/utils/formatDistance";
+import { useNavigationStore } from "@/store/navigationStore";
 
 interface DestinationPinProps {
   location: CampusLocation;
@@ -14,6 +15,14 @@ interface DestinationPinProps {
 
 export function DestinationPin({ location, onSelect }: DestinationPinProps) {
   const [showPopup, setShowPopup] = useState(false);
+  const { viewMode } = useNavigationStore();
+
+  // Close popup when entering AR or turn-by-turn — it floats over the HUD
+  useEffect(() => {
+    if (viewMode === "ar-simulation" || viewMode === "turn-by-turn") {
+      setShowPopup(false);
+    }
+  }, [viewMode]);
   const distance = haversineDistance(
     COLLEGE_GATE.lat, COLLEGE_GATE.lng,
     location.lat, location.lng

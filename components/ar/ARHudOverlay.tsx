@@ -2,22 +2,10 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigationStore } from "@/store/navigationStore";
-import { CAMPUS_LOCATIONS } from "@/constants/locations";
-import { formatDistance } from "@/utils/formatDistance";
-import { haversineDistance } from "@/utils/bearing";
-import { COLLEGE_GATE } from "@/constants/locations";
 
 export function ARHudOverlay() {
-  const { viewMode, selectedDestination } = useNavigationStore();
+  const { viewMode } = useNavigationStore();
   const visible = viewMode === "ar-simulation";
-
-  const dest = selectedDestination
-    ? CAMPUS_LOCATIONS.find((l) => l.id === selectedDestination)
-    : null;
-
-  const distance = dest
-    ? haversineDistance(COLLEGE_GATE.lat, COLLEGE_GATE.lng, dest.lat, dest.lng)
-    : 0;
 
   return (
     <AnimatePresence>
@@ -36,8 +24,8 @@ export function ARHudOverlay() {
               className={`absolute w-10 h-10 ${
                 corner === "tl" ? "top-6 left-6 border-t-2 border-l-2" :
                 corner === "tr" ? "top-6 right-6 border-t-2 border-r-2" :
-                corner === "bl" ? "bottom-48 left-6 border-b-2 border-l-2" :
-                "bottom-48 right-6 border-b-2 border-r-2"
+                corner === "bl" ? "bottom-56 left-6 border-b-2 border-l-2" :
+                "bottom-56 right-6 border-b-2 border-r-2"
               } border-blue-400/70 rounded-sm`}
             />
           ))}
@@ -52,19 +40,6 @@ export function ARHudOverlay() {
             </div>
           </div>
 
-          {/* Destination info — bottom center (above info panel) */}
-          {dest && (
-            <div className="absolute bottom-52 left-1/2 -translate-x-1/2 text-center">
-              <div className="bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl px-6 py-3">
-                <div className="flex items-center gap-2 justify-center">
-                  <span className="text-xl">{dest.icon}</span>
-                  <span className="text-white font-semibold text-sm">{dest.label}</span>
-                </div>
-                <p className="text-blue-300 text-xs mt-1">{formatDistance(distance)} away</p>
-              </div>
-            </div>
-          )}
-
           {/* Subtle scan line animation */}
           <motion.div
             className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/30 to-transparent"
@@ -78,7 +53,7 @@ export function ARHudOverlay() {
             animate={{ opacity: 0 }}
             transition={{ delay: 3, duration: 1.5 }}
             className="absolute bottom-52 left-1/2 -translate-x-1/2 text-white/50 text-xs tracking-wide whitespace-nowrap"
-            style={{ bottom: "13rem" }}
+            style={{ bottom: "15.5rem" }}
           >
             Move mouse or tilt phone to look around
           </motion.p>
