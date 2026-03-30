@@ -13,6 +13,8 @@ import { UserLocationMarker } from "./UserLocationMarker";
 import { DestinationPin } from "./DestinationPin";
 import { MapStyleToggle } from "./MapStyleToggle";
 import { RouteLayer } from "./RouteLayer";
+import { BuildingLayer } from "./BuildingLayer";
+import { arFog } from "@/utils/fogConfig";
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 
@@ -129,7 +131,20 @@ export function CampusMap() {
         center: [COLLEGE_GATE.lng, COLLEGE_GATE.lat],
         duration: 2500,
       });
+      map.setFog(arFog);
+      map.dragPan.disable();
+      map.scrollZoom.disable();
       toast.info("AR Simulation — look around to explore");
+    }
+
+    // Clean up fog + controls when leaving AR
+    if (viewMode !== "ar-simulation") {
+      const map2 = mapRef.current?.getMap();
+      if (map2) {
+        try { map2.setFog({}); } catch { /* ignore */ }
+        map2.dragPan.enable();
+        map2.scrollZoom.enable();
+      }
     }
   }, [viewMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -160,6 +175,7 @@ export function CampusMap() {
         mapStyle={isSatellite ? STYLES.satellite : STYLES.street}
       >
         <NavigationControl position="bottom-right" />
+        <BuildingLayer />
         <RouteLayer />
         <UserLocationMarker mode={viewMode} bearing={bearing} />
         {CAMPUS_LOCATIONS.map((loc) => (
