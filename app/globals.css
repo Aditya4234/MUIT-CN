@@ -1,82 +1,72 @@
 @import "tailwindcss";
 @import "mapbox-gl/dist/mapbox-gl.css";
 
+/* ── Design System: The Luminous Scholar ─────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surface hierarchy */
+  --surface:           #060e20;
+  --surface-low:       #091328;
+  --surface-high:      #141f38;
+  --surface-highest:   #192540;
+
+  /* Text */
+  --on-surface:        #dee5ff;
+  --on-surface-muted:  #a3aac4;
+  --outline:           #40485d;
+
+  /* Accents */
+  --primary:           #85adff;
+  --primary-dim:       #6e9fff;
+  --secondary:         #ac8aff;
+  --secondary-dim:     #5516be;
+  --tertiary:          #9bffce;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Fonts */
+  --font-display: var(--font-jakarta);
+  --font-sans:    var(--font-inter);
+  --font-label:   var(--font-manrope);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--surface);
+  color: var(--on-surface);
+  font-family: var(--font-inter), Inter, system-ui, sans-serif;
 }
 
-/* AR holographic marker */
+/* ── AR holographic marker ───────────────────────────────────────────────── */
 .ar-nav-arrow {
-  background: rgba(59, 130, 246, 0.15);
+  background: rgba(172, 138, 255, 0.12);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(59, 130, 246, 0.5);
+  border: 1px solid rgba(172, 138, 255, 0.45);
   border-radius: 12px;
   padding: 12px 20px;
-  color: white;
+  color: #dee5ff;
   text-align: center;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 0 60px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 20px rgba(172, 138, 255, 0.25), 0 0 60px rgba(172, 138, 255, 0.08);
   animation: ar-pulse 2s ease-in-out infinite;
   min-width: 120px;
   pointer-events: none;
 }
 
-.ar-arrow-icon {
-  font-size: 1.75rem;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.ar-arrow-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-}
-
-.ar-arrow-distance {
-  font-size: 0.75rem;
-  opacity: 0.8;
-  margin-top: 2px;
-}
+.ar-arrow-icon { font-size: 1.75rem; line-height: 1; margin-bottom: 4px; }
+.ar-arrow-label { font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em; }
+.ar-arrow-distance { font-size: 0.75rem; opacity: 0.75; margin-top: 2px; }
 
 @keyframes ar-pulse {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 0 60px rgba(59, 130, 246, 0.1);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(59, 130, 246, 0.6), 0 0 80px rgba(59, 130, 246, 0.2);
-  }
+  0%, 100% { box-shadow: 0 0 20px rgba(172,138,255,0.25), 0 0 60px rgba(172,138,255,0.08); }
+  50%       { box-shadow: 0 0 40px rgba(172,138,255,0.55), 0 0 80px rgba(172,138,255,0.18); }
 }
 
-/* Mapbox popup reset */
+/* ── Mapbox popup reset ──────────────────────────────────────────────────── */
 .mapboxgl-popup-content {
   padding: 0 !important;
   border-radius: 12px !important;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4) !important;
 }
-
 .mapboxgl-popup-close-button {
   font-size: 18px;
   padding: 4px 8px;
-  color: #6b7280;
+  color: #a3aac4;
 }

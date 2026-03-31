@@ -3,10 +3,12 @@ import type { ViewMode, NavigationRoute, ManeuverStep } from "@/types";
 
 interface NavigationState {
   selectedDestination: string | null;
+  hoveredLocation: string | null;
   viewMode: ViewMode;
   routeData: NavigationRoute | null;
   navSteps: ManeuverStep[];
   selectDestination: (id: string) => void;
+  setHoveredLocation: (id: string | null) => void;
   setViewMode: (mode: ViewMode) => void;
   setRouteData: (data: NavigationRoute) => void;
   clearNavigation: () => void;
@@ -14,12 +16,15 @@ interface NavigationState {
 
 export const useNavigationStore = create<NavigationState>((set) => ({
   selectedDestination: null,
+  hoveredLocation: null,
   viewMode: "2d-map",
   routeData: null,
   navSteps: [],
 
   selectDestination: (id) =>
     set({ selectedDestination: id, viewMode: "route-overview" }),
+
+  setHoveredLocation: (id) => set({ hoveredLocation: id }),
 
   setViewMode: (mode) => set({ viewMode: mode }),
 
@@ -29,6 +34,7 @@ export const useNavigationStore = create<NavigationState>((set) => ({
   clearNavigation: () =>
     set({
       selectedDestination: null,
+      hoveredLocation: null,
       viewMode: "2d-map",
       routeData: null,
       navSteps: [],

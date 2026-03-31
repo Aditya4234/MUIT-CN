@@ -41,7 +41,7 @@ export function RouteLayer() {
             type="line"
             layout={{ "line-join": "round", "line-cap": "round" }}
             paint={{
-              "line-color": "#4285F4",
+              "line-color": "#85adff",
               "line-width": isTurnByTurn ? 18 : 10,
               "line-opacity": isTurnByTurn ? 0.35 : 0.25,
               "line-blur": isTurnByTurn ? 6 : 4,
@@ -53,7 +53,7 @@ export function RouteLayer() {
             type="line"
             layout={{ "line-join": "round", "line-cap": "round" }}
             paint={{
-              "line-color": isTurnByTurn ? "#60a5fa" : "#4285F4",
+              "line-color": isTurnByTurn ? "#6e9fff" : "#85adff",
               "line-width": isTurnByTurn ? 7 : 5,
               "line-opacity": 0.95,
             }}
@@ -69,7 +69,7 @@ export function RouteLayer() {
             id="ar-path-base"
             type="fill-extrusion"
             paint={{
-              "fill-extrusion-color": "#1d4ed8",
+              "fill-extrusion-color": "#5516be",
               "fill-extrusion-height": 0.05,
               "fill-extrusion-base": 0,
               "fill-extrusion-opacity": 0.5,
@@ -81,7 +81,7 @@ export function RouteLayer() {
             id="ar-path-extrusion"
             type="fill-extrusion"
             paint={{
-              "fill-extrusion-color": "#3b82f6",
+              "fill-extrusion-color": "#ac8aff",
               "fill-extrusion-height": 0.3,
               "fill-extrusion-base": 0.05,
               "fill-extrusion-opacity": 0.75,
@@ -109,7 +109,7 @@ export function RouteLayer() {
             type="line"
             layout={{ "line-join": "round", "line-cap": "round" }}
             paint={{
-              "line-color": "#3b82f6",
+              "line-color": "#ac8aff",
               "line-width": 14,
               "line-blur": 10,
               "line-opacity": 0.45,
@@ -121,7 +121,7 @@ export function RouteLayer() {
             type="line"
             layout={{ "line-join": "round", "line-cap": "round" }}
             paint={{
-              "line-color": "#bfdbfe",
+              "line-color": "#dee5ff",
               "line-width": 2,
               "line-blur": 0,
               "line-opacity": 0.9,

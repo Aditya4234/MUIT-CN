@@ -19,14 +19,24 @@ export function UserLocationMarker({ mode, bearing = 0 }: UserLocationMarkerProp
           style={{ transform: `rotate(${bearing}deg)` }}
           className="w-8 h-8 flex items-center justify-center drop-shadow-lg"
         >
-          <svg viewBox="0 0 24 24" fill="#3b82f6" stroke="white" strokeWidth="1.5" width="32" height="32">
+          <svg viewBox="0 0 24 24" fill="#85adff" stroke="#060e20" strokeWidth="1.5" width="32" height="32">
             <polygon points="12,2 20,20 12,16 4,20" />
           </svg>
         </div>
       ) : (
         <div className="relative flex items-center justify-center">
-          <div className="absolute w-10 h-10 rounded-full bg-blue-400/30 animate-ping" />
-          <div className="w-4 h-4 rounded-full bg-blue-500 border-2 border-white shadow-lg" />
+          <div
+            className="absolute w-10 h-10 rounded-full animate-ping"
+            style={{ background: "rgba(133, 173, 255, 0.25)" }}
+          />
+          <div
+            className="w-4 h-4 rounded-full shadow-lg"
+            style={{
+              background: "#85adff",
+              border: "2px solid #dee5ff",
+              boxShadow: "0 0 10px rgba(133,173,255,0.6)",
+            }}
+          />
         </div>
       )}
     </Marker>

@@ -247,13 +247,30 @@ export function CampusMap() {
 
   const handleStyleToggle = useCallback(() => setIsSatellite((p) => !p), []);
 
+  const isFullscreen = viewMode === "turn-by-turn" || viewMode === "ar-simulation";
+
   return (
-    <div className="relative w-full h-screen">
+    <div
+      className="relative"
+      style={{ width: isFullscreen ? "100vw" : "100%", height: "100vh" }}
+    >
       {loadingRoute && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/20 pointer-events-none">
-          <div className="bg-white dark:bg-zinc-800 rounded-2xl px-6 py-4 shadow-xl flex items-center gap-3">
-            <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Loading route…</span>
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/30 pointer-events-none">
+          <div
+            className="rounded-2xl px-6 py-4 flex items-center gap-3"
+            style={{
+              background: "#091328",
+              backdropFilter: "blur(12px)",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
+            }}
+          >
+            <div
+              className="w-5 h-5 border-2 rounded-full animate-spin"
+              style={{ borderColor: "#85adff33", borderTopColor: "#85adff" }}
+            />
+            <span className="text-sm font-medium" style={{ color: "#dee5ff", fontFamily: "var(--font-inter)" }}>
+              Loading route…
+            </span>
           </div>
         </div>
       )}

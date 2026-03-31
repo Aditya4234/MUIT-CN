@@ -1,10 +1,17 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Navigation, Radio } from "lucide-react";
+import { Navigation, Radio, Building2, BookOpen, Trophy, UtensilsCrossed } from "lucide-react";
 import { useNavigationStore } from "@/store/navigationStore";
 import { CAMPUS_LOCATIONS } from "@/constants/locations";
 import { formatDistance, formatDuration } from "@/utils/formatDistance";
+
+const LOCATION_ICONS: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  admin: Building2,
+  library: BookOpen,
+  basketball: Trophy,
+  canteen: UtensilsCrossed,
+};
 
 export function NavigationInfoPanel() {
   const { selectedDestination, routeData, viewMode, setViewMode } = useNavigationStore();
@@ -28,24 +35,39 @@ export function NavigationInfoPanel() {
           transition={{ type: "spring", damping: 22, stiffness: 260 }}
           className="absolute bottom-0 left-0 right-0 z-40 px-4 pb-6"
         >
-          <div className="bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl border border-gray-100 dark:border-zinc-700 overflow-hidden max-w-md mx-auto">
+          <div
+            className="rounded-3xl overflow-hidden max-w-md mx-auto"
+            style={{
+              background: "#091328",
+              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)",
+            }}
+          >
             {/* Colour accent bar */}
-            <div className="h-1 w-full" style={{ backgroundColor: location.color }} />
+            <div className="h-[3px] w-full" style={{ backgroundColor: location.color }} />
 
             <div className="p-5">
               {/* Destination header */}
               <div className="flex items-center gap-3 mb-4">
                 <div
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
-                  style={{ backgroundColor: location.color + "22" }}
+                  className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: location.color + "22" }}
                 >
-                  {location.icon}
+                  {(() => {
+                    const Icon = LOCATION_ICONS[location.id] ?? Building2;
+                    return <Icon size={20} style={{ color: location.color }} />;
+                  })()}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white text-base leading-tight">
+                  <h3
+                    className="font-bold text-base leading-tight"
+                    style={{ color: "#dee5ff", fontFamily: "var(--font-jakarta)" }}
+                  >
                     {location.label}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                  <p
+                    className="text-xs mt-0.5"
+                    style={{ color: "#a3aac4", fontFamily: "var(--font-manrope)" }}
+                  >
                     {formatDistance(routeData.distance)} · {formatDuration(routeData.duration)}
                   </p>
                 </div>
@@ -53,39 +75,63 @@ export function NavigationInfoPanel() {
 
               {/* Action buttons — route-overview only */}
               {viewMode === "route-overview" && (
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-2.5">
                   <button
                     onClick={() => setViewMode("turn-by-turn")}
-                    className="flex-1 flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl py-3 text-sm font-semibold transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-2xl py-3 text-sm font-semibold transition-all hover:brightness-110"
+                    style={{
+                      background: "linear-gradient(135deg, #85adff, #6e9fff)",
+                      color: "#060e20",
+                      fontFamily: "var(--font-inter)",
+                    }}
                   >
-                    <Navigation size={16} />
+                    <Navigation size={15} />
                     Start Navigation
                   </button>
                   <button
                     onClick={() => setViewMode("ar-simulation")}
-                    className="flex-1 flex items-center justify-center gap-2 rounded-2xl py-3 text-sm font-semibold text-white transition-colors"
-                    style={{ background: `linear-gradient(135deg, #6366f1, #8b5cf6)` }}
+                    className="flex-1 flex items-center justify-center gap-2 rounded-2xl py-3 text-sm font-semibold transition-all hover:brightness-110"
+                    style={{
+                      background: "linear-gradient(135deg, #ac8aff, #5516be)",
+                      color: "#dee5ff",
+                      fontFamily: "var(--font-inter)",
+                    }}
                   >
-                    <Radio size={16} />
+                    <Radio size={15} />
                     AR View
                   </button>
                 </div>
               )}
 
-              {/* Exit buttons for nav/AR modes */}
+              {/* Exit — turn-by-turn */}
               {viewMode === "turn-by-turn" && (
                 <button
                   onClick={() => setViewMode("route-overview")}
-                  className="w-full py-3 rounded-2xl border border-gray-200 dark:border-zinc-600 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors"
+                  className="w-full py-3 rounded-2xl text-sm font-semibold transition-all hover:brightness-110"
+                  style={{
+                    background: "rgba(25, 37, 64, 0.6)",
+                    backdropFilter: "blur(12px)",
+                    outline: "1px solid rgba(133,173,255,0.2)",
+                    color: "#85adff",
+                    fontFamily: "var(--font-inter)",
+                  }}
                 >
                   Exit Navigation
                 </button>
               )}
 
+              {/* Exit — AR */}
               {viewMode === "ar-simulation" && (
                 <button
                   onClick={() => setViewMode("route-overview")}
-                  className="w-full py-3 rounded-2xl border border-purple-200 dark:border-purple-800 text-sm font-semibold text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+                  className="w-full py-3 rounded-2xl text-sm font-semibold transition-all hover:brightness-110"
+                  style={{
+                    background: "rgba(25, 37, 64, 0.6)",
+                    backdropFilter: "blur(12px)",
+                    outline: "1px solid rgba(172,138,255,0.2)",
+                    color: "#ac8aff",
+                    fontFamily: "var(--font-inter)",
+                  }}
                 >
                   Exit AR
                 </button>

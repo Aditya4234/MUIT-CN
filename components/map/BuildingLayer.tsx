@@ -25,7 +25,7 @@ export function BuildingLayer() {
         filter={["==", "extrude", "true"]}
         paint={{
           "fill-extrusion-color": isAR
-            ? "#60a5fa"   // bright electric blue — translucency does the work
+            ? "#ac8aff"   // secondary neon purple — holographic AR tint
             : [           // subtle dark blue for turn-by-turn
                 "interpolate", ["linear"], ["get", "height"],
                 0,   "#1a1a2e",
@@ -54,7 +54,7 @@ export function BuildingLayer() {
           minzoom={14}
           filter={["==", "extrude", "true"]}
           paint={{
-            "fill-extrusion-color": "#93c5fd",   // lighter blue-300 for the rim
+            "fill-extrusion-color": "#dee5ff",   // on-surface light for the rim highlight
             "fill-extrusion-height": ["+", ["get", "height"], 0.6],
             "fill-extrusion-base": ["get", "height"],
             "fill-extrusion-opacity": 0.08,

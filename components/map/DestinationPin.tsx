@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Marker, Popup } from "react-map-gl/mapbox";
+import { useState } from "react";
+import { Marker } from "react-map-gl/mapbox";
+import { motion } from "framer-motion";
 import type { CampusLocation } from "@/types";
-import { COLLEGE_GATE } from "@/constants/locations";
-import { haversineDistance } from "@/utils/bearing";
-import { formatDistance } from "@/utils/formatDistance";
 import { useNavigationStore } from "@/store/navigationStore";
+
+// Design system secondary color for all map destination markers
+const MARKER_COLOR = "#ac8aff";
+const MARKER_GLOW  = "rgba(172, 138, 255, 0.35)";
+const MARKER_GLOW_STRONG = "rgba(172, 138, 255, 0.6)";
 
 interface DestinationPinProps {
   location: CampusLocation;
@@ -14,68 +17,88 @@ interface DestinationPinProps {
 }
 
 export function DestinationPin({ location, onSelect }: DestinationPinProps) {
-  const [showPopup, setShowPopup] = useState(false);
-  const { viewMode } = useNavigationStore();
+  const [isHovered, setIsHovered] = useState(false);
+  const { viewMode, selectedDestination, hoveredLocation, setHoveredLocation } = useNavigationStore();
 
-  // Close popup when entering AR or turn-by-turn — it floats over the HUD
-  useEffect(() => {
-    if (viewMode === "ar-simulation" || viewMode === "turn-by-turn") {
-      setShowPopup(false);
-    }
-  }, [viewMode]);
-  const distance = haversineDistance(
-    COLLEGE_GATE.lat, COLLEGE_GATE.lng,
-    location.lat, location.lng
-  );
+  const isSelected = selectedDestination === location.id;
+  const isSidebarHovered = hoveredLocation === location.id;
+  const isActive = isSelected || isSidebarHovered || isHovered;
+
+  // AR mode uses holographic CSS markers instead
+  if (viewMode === "ar-simulation") return null;
+
+  const dotSize = isSelected ? 14 : 10;
+  const scale   = isSelected ? 1.45 : isActive ? 1.2 : 1;
 
   return (
-    <>
-      <Marker
-        longitude={location.lng}
-        latitude={location.lat}
-        anchor="bottom"
-        onClick={(e) => {
-          e.originalEvent.stopPropagation();
-          setShowPopup(true);
-          onSelect(location.id);
-        }}
+    <Marker
+      longitude={location.lng}
+      latitude={location.lat}
+      anchor="bottom"
+      onClick={(e) => {
+        e.originalEvent.stopPropagation();
+        onSelect(location.id);
+      }}
+    >
+      <motion.div
+        animate={{ scale }}
+        transition={{ type: "spring", stiffness: 380, damping: 22 }}
+        style={{ transformOrigin: "bottom center" }}
+        onMouseEnter={() => { setIsHovered(true); setHoveredLocation(location.id); }}
+        onMouseLeave={() => { setIsHovered(false); setHoveredLocation(null); }}
+        className="flex flex-col items-center cursor-pointer"
       >
-        <div className="flex flex-col items-center cursor-pointer group">
+        {/* Floating label pill */}
+        <div
+          className="mb-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-150"
+          style={{
+            background: isSelected ? MARKER_COLOR : "rgba(9, 19, 40, 0.88)",
+            color: isSelected ? "#060e20" : "#dee5ff",
+            outline: `1px solid ${isActive ? MARKER_COLOR : "rgba(172,138,255,0.3)"}`,
+            opacity: isActive ? 1 : 0.8,
+            fontFamily: "var(--font-manrope)",
+          }}
+        >
+          {location.label.split(" ")[0]}
+        </div>
+
+        {/* Dot + pulse ring */}
+        <div className="relative flex items-center justify-center">
+          {isActive && (
+            <span
+              className="absolute rounded-full animate-ping opacity-30"
+              style={{
+                width: dotSize + 12,
+                height: dotSize + 12,
+                background: MARKER_COLOR,
+              }}
+            />
+          )}
           <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-lg shadow-lg border-2 border-white group-hover:scale-110 transition-transform"
-            style={{ backgroundColor: location.color }}
-          >
-            {location.icon}
-          </div>
-          <div
-            className="w-0 h-0"
+            className="relative z-10 rounded-full border-2 transition-all duration-150"
             style={{
-              borderLeft: "6px solid transparent",
-              borderRight: "6px solid transparent",
-              borderTop: `8px solid ${location.color}`,
+              width: dotSize,
+              height: dotSize,
+              background: MARKER_COLOR,
+              borderColor: isSelected ? "#dee5ff" : "rgba(255,255,255,0.6)",
+              boxShadow: isActive
+                ? `0 0 12px ${MARKER_GLOW_STRONG}, 0 0 24px ${MARKER_GLOW}`
+                : `0 2px 6px rgba(0,0,0,0.5)`,
             }}
           />
         </div>
-      </Marker>
 
-      {showPopup && (
-        <Popup
-          longitude={location.lng}
-          latitude={location.lat}
-          anchor="bottom"
-          offset={55}
-          onClose={() => setShowPopup(false)}
-          className="rounded-xl"
-        >
-          <div className="p-2 min-w-[140px]">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xl">{location.icon}</span>
-              <span className="font-semibold text-sm text-gray-900">{location.label}</span>
-            </div>
-            <p className="text-xs text-gray-500">{formatDistance(distance)} from gate</p>
-          </div>
-        </Popup>
-      )}
-    </>
+        {/* Stem */}
+        <div
+          style={{
+            width: 2,
+            height: 7,
+            background: MARKER_COLOR,
+            opacity: 0.5,
+            borderRadius: 1,
+          }}
+        />
+      </motion.div>
+    </Marker>
   );
 }

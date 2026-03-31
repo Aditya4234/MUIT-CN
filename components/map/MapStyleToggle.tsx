@@ -1,6 +1,7 @@
 "use client";
 
 import { Map, Globe } from "lucide-react";
+import { useNavigationStore } from "@/store/navigationStore";
 
 interface MapStyleToggleProps {
   isSatellite: boolean;
@@ -8,20 +9,32 @@ interface MapStyleToggleProps {
 }
 
 export function MapStyleToggle({ isSatellite, onToggle }: MapStyleToggleProps) {
+  const { viewMode } = useNavigationStore();
+  if (viewMode === "ar-simulation") return null;
+
   return (
     <button
       onClick={onToggle}
-      className="absolute top-4 right-4 z-40 flex items-center gap-2 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm border border-gray-200 dark:border-zinc-700 rounded-full px-3 py-2 text-sm font-medium shadow-md hover:bg-white dark:hover:bg-zinc-700 transition-colors"
+      className="absolute top-4 right-4 z-40 flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-medium transition-all hover:brightness-110"
+      style={{
+        background: "rgba(9, 19, 40, 0.85)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        outline: "1px solid rgba(64, 72, 93, 0.3)",
+        color: "#a3aac4",
+        fontFamily: "var(--font-manrope)",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+      }}
     >
       {isSatellite ? (
         <>
-          <Map size={16} className="text-gray-700 dark:text-gray-300" />
-          <span className="text-gray-700 dark:text-gray-300">Street</span>
+          <Map size={14} style={{ color: "#85adff" }} />
+          <span>Street</span>
         </>
       ) : (
         <>
-          <Globe size={16} className="text-gray-700 dark:text-gray-300" />
-          <span className="text-gray-700 dark:text-gray-300">Satellite</span>
+          <Globe size={14} style={{ color: "#85adff" }} />
+          <span>Satellite</span>
         </>
       )}
     </button>

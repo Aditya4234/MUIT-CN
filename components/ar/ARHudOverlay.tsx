@@ -26,15 +26,29 @@ export function ARHudOverlay() {
                 corner === "tr" ? "top-6 right-6 border-t-2 border-r-2" :
                 corner === "bl" ? "bottom-56 left-6 border-b-2 border-l-2" :
                 "bottom-56 right-6 border-b-2 border-r-2"
-              } border-blue-400/70 rounded-sm`}
+              } rounded-sm`}
+              style={{ borderColor: "rgba(172, 138, 255, 0.6)" }}
             />
           ))}
 
           {/* AR Navigation badge — top center */}
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
-            <div className="flex items-center gap-2 bg-blue-500/20 backdrop-blur-md border border-blue-400/40 rounded-full px-4 py-1.5">
-              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-              <span className="text-blue-200 text-xs font-semibold tracking-widest uppercase">
+          <div className="absolute top-6 left-1/2 -translate-x-1/2">
+            <div
+              className="flex items-center gap-2 rounded-full px-4 py-1.5"
+              style={{
+                background: "rgba(172, 138, 255, 0.12)",
+                backdropFilter: "blur(12px)",
+                outline: "1px solid rgba(172, 138, 255, 0.35)",
+              }}
+            >
+              <span
+                className="w-2 h-2 rounded-full animate-pulse"
+                style={{ background: "#ac8aff" }}
+              />
+              <span
+                className="text-xs font-semibold tracking-widest uppercase"
+                style={{ color: "#ac8aff", fontFamily: "var(--font-manrope)" }}
+              >
                 AR Navigation
               </span>
             </div>
@@ -42,7 +56,8 @@ export function ARHudOverlay() {
 
           {/* Subtle scan line animation */}
           <motion.div
-            className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/30 to-transparent"
+            className="absolute left-0 right-0 h-px"
+            style={{ background: "linear-gradient(90deg, transparent, rgba(172,138,255,0.25), transparent)" }}
             animate={{ top: ["10%", "90%", "10%"] }}
             transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
           />
@@ -52,8 +67,8 @@ export function ARHudOverlay() {
             initial={{ opacity: 0.8 }}
             animate={{ opacity: 0 }}
             transition={{ delay: 3, duration: 1.5 }}
-            className="absolute bottom-52 left-1/2 -translate-x-1/2 text-white/50 text-xs tracking-wide whitespace-nowrap"
-            style={{ bottom: "15.5rem" }}
+            className="absolute left-1/2 -translate-x-1/2 text-xs tracking-wide whitespace-nowrap"
+            style={{ bottom: "15.5rem", color: "rgba(163,170,196,0.6)", fontFamily: "var(--font-manrope)" }}
           >
             Move mouse or tilt phone to look around
           </motion.p>
