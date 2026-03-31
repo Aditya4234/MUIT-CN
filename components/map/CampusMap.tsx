@@ -198,6 +198,9 @@ export function CampusMap() {
       map.dragPan.enable();
       map.scrollZoom.enable();
     } else if (viewMode === "turn-by-turn") {
+      // Sidebar unmounts when entering this mode — resize so the canvas fills the
+      // now-wider container before the camera animation uses the new dimensions.
+      map.resize();
       const firstBearing = firstStepBearing;
       // Set terrain before camera animation so it doesn't interrupt easeTo
       if (!map.getSource("mapbox-dem")) {
@@ -216,6 +219,8 @@ export function CampusMap() {
       map.scrollZoom.enable();
       toast.info("Turn-by-turn navigation");
     } else if (viewMode === "ar-simulation") {
+      // Same resize needed — sidebar also unmounts in AR mode.
+      map.resize();
       // No terrain in AR mode: MercatorCoordinate altitude is above sea level, and
       // terrain exaggeration would push the ground mesh above the camera at 1.7 m.
       try { map.setTerrain(null); } catch { /* ignore */ }
