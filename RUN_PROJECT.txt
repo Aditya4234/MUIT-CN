@@ -1,0 +1,58 @@
+PROJECT RUN INSTRUCTIONS
+========================
+
+Project: AR Campus Navigation POC
+Tech Stack: Next.js 16 + React 19 + Mapbox GL JS + Zustand
+
+PREREQUISITES
+=============
+- Node.js installed
+- npm package manager
+- Mapbox access token in .env.local (NEXT_PUBLIC_MAPBOX_TOKEN)
+
+HOW TO RUN THE PROJECT
+======================
+
+1. Install Dependencies:
+   npm install
+
+2. Start Development Server:
+   npm run dev
+
+3. Open in Browser:
+   http://localhost:3000
+
+The app will be loaded and ready to use.
+
+BUILD FOR PRODUCTION
+====================
+npm run build
+
+CODE QUALITY
+============
+npm run lint
+
+PROJECT STRUCTURE
+=================
+- app/page.tsx - Main application component (most logic lives here)
+- store/navigationStore.ts - Zustand state management
+- constants/locations.ts - Static campus location coordinates
+- Map Modes:
+  * Mode 1: 2D Map (idle state, pitch 0°)
+  * Mode 2: Route Overview (pitch 45°)
+  * Mode 3: Turn-by-Turn Navigation (pitch 60°)
+  * Mode 4: AR Simulation (pitch 85°, mouse/gyro control)
+
+KEY FEATURES
+============
+- Single Mapbox GL JS instance for all modes
+- AR simulation with camera transitions
+- Route overview and turn-by-turn navigation
+- 3D buildings visualization
+- Holographic AR markers
+- Campus navigation with directions API
+
+STATUS
+======
+✓ Project loaded successfully at http://localhost:3000
+✓ Ready for development and testing
