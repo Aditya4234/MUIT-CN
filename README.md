@@ -139,13 +139,14 @@ Requires a free [Mapbox account](https://account.mapbox.com/) and public token.
 ## Research Paper
 
 > **"AR/VR based Campus Navigation System (CNS)"**  
+> 2025 7th International Conference on Intelligent Sustainable Systems (ICISS) · March 2025  
 > Published on **IEEE Xplore** · Primary Author  
-> 📄 [https://doi.org/10.1109/ICISS63372.2025.11076255](https://doi.org/10.1109/ICISS63372.2025.11076255)
+> 📄 [Read the paper](https://doi.org/10.1109/ICISS63372.2025.11076255)
 
-The paper covers the full system design including manual GPS data collection methodology, AR Core integration, accessibility considerations (voice-guided navigation, customizable routes), and real-time event/closure update infrastructure.
+The paper covers the full system design including manual GPS data collection methodology, AR Core integration, accessibility considerations (voice-guided navigation, customizable routes, architecture diagrams), and real-time event/closure update infrastructure.
 
 ---
 
 ## Confidentiality Note
 
-The real production system (Flutter mobile app, raw GPS dataset, campus coordinate database) is an in-house university project and is not publicly available. This POC is an independent web demo built solely to demonstrate the navigation UX concept described in the published research.
+The real production system (Flutter mobile app, raw GPS dataset, campus coordinate database, campus POI database) is an in-house university project and is not publicly available. This POC is an independent web demo built solely to demonstrate the navigation concept described in the published research.
