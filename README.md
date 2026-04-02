@@ -4,7 +4,7 @@
 
 > A Next.js app that simulates a full AR campus navigation experience inside a single Mapbox GL JS map instance — no Three.js, no WebXR, no separate 3D engine.
 
-🔗 **[Live Demo](#)** · 🎬 **[Demo Video](#)** · 📄 **[Research Paper](#)**
+🔗 **[Live Demo](https://campus-navigation-poc.vercel.app)** · 🎬 **[Demo Video](#)** · 📄 **[Research Paper](#)**
 
 ---
 
