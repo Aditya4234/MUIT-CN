@@ -16,7 +16,7 @@ export function ModeIndicator() {
   const { label, icon: Icon, accent } = MODES[viewMode];
 
   return (
-    <div className="absolute top-4 left-4 z-40">
+    <div className="absolute top-4 left-16 md:left-4 z-40">
       <AnimatePresence mode="wait">
         <motion.div
           key={viewMode}

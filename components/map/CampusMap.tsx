@@ -5,6 +5,7 @@ import Map, { NavigationControl } from "react-map-gl/mapbox";
 import type { MapRef } from "react-map-gl/mapbox";
 import mapboxgl from "mapbox-gl";
 import { toast } from "sonner";
+import { Menu } from "lucide-react";
 import { CAMPUS_LOCATIONS, COLLEGE_GATE } from "@/constants/locations";
 import { useNavigationStore } from "@/store/navigationStore";
 import { getDirections } from "@/hooks/useDirections";
@@ -17,6 +18,7 @@ import { DestinationPin } from "./DestinationPin";
 import { MapStyleToggle } from "./MapStyleToggle";
 import { RouteLayer } from "./RouteLayer";
 import { BuildingLayer } from "./BuildingLayer";
+import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 
@@ -39,6 +41,7 @@ export function CampusMap() {
     routeData,
     selectDestination,
     setRouteData,
+    setSidebarOpen,
   } = useNavigationStore();
 
   const firstStepBearing = navSteps[0]?.maneuver.bearing_after ?? 0;
@@ -159,7 +162,22 @@ export function CampusMap() {
   // Camera + fog + pan-lock transitions per viewMode
   useEffect(() => {
     const map = mapRef.current?.getMap();
-    if (!map || !routeData) return;
+    if (!map) return;
+
+    // 2d-map reset runs even when routeData is null (e.g. after clearNavigation)
+    if (viewMode === "2d-map") {
+      if (transitioningRef.current) map.stop();
+      transitioningRef.current = true;
+      map.once("moveend", () => { transitioningRef.current = false; });
+      map.easeTo({ pitch: 0, bearing: 0, zoom: 15, duration: 1500 });
+      try { map.setFog({}); } catch { /* ignore */ }
+      try { map.setTerrain(null); } catch { /* ignore */ }
+      map.dragPan.enable();
+      map.scrollZoom.enable();
+      return;
+    }
+
+    if (!routeData) return;
 
     // Ignore if a transition is already in flight — prevents rapid-click queuing
     if (transitioningRef.current) {
@@ -170,13 +188,7 @@ export function CampusMap() {
 
     const dest = CAMPUS_LOCATIONS.find((l) => l.id === selectedDestination);
 
-    if (viewMode === "2d-map") {
-      map.easeTo({ pitch: 0, bearing: 0, zoom: 15, duration: 1500 });
-      try { map.setFog({}); } catch { /* ignore */ }
-      try { map.setTerrain(null); } catch { /* ignore */ }
-      map.dragPan.enable();
-      map.scrollZoom.enable();
-    } else if (viewMode === "route-overview" && dest) {
+    if (viewMode === "route-overview" && dest) {
       const routeBearing = calculateBearing(
         COLLEGE_GATE.lat, COLLEGE_GATE.lng,
         dest.lat, dest.lng
@@ -217,7 +229,6 @@ export function CampusMap() {
       });
       map.dragPan.enable();
       map.scrollZoom.enable();
-      toast.info("Turn-by-turn navigation");
     } else if (viewMode === "ar-simulation") {
       // Same resize needed — sidebar also unmounts in AR mode.
       map.resize();
@@ -256,28 +267,19 @@ export function CampusMap() {
 
   return (
     <div
-      className="relative"
-      style={{ width: isFullscreen ? "100vw" : "100%", height: "100vh" }}
+      className="relative flex-1"
+      style={{ width: "100%", height: "100vh" }}
     >
-      {loadingRoute && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/30 pointer-events-none">
-          <div
-            className="rounded-2xl px-6 py-4 flex items-center gap-3"
-            style={{
-              background: "#091328",
-              backdropFilter: "blur(12px)",
-              boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
-            }}
-          >
-            <div
-              className="w-5 h-5 border-2 rounded-full animate-spin"
-              style={{ borderColor: "#85adff33", borderTopColor: "#85adff" }}
-            />
-            <span className="text-sm font-medium" style={{ color: "#dee5ff", fontFamily: "var(--font-inter)" }}>
-              Loading route…
-            </span>
-          </div>
-        </div>
+      <LoadingOverlay isLoading={loadingRoute} />
+
+      {/* Mobile Menu Toggle */}
+      {!isFullscreen && (
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="absolute top-4 left-4 z-40 w-10 h-10 rounded-full flex items-center justify-center bg-[#091328]/90 backdrop-blur-md border border-white/10 text-white md:hidden shadow-lg"
+        >
+          <Menu size={20} />
+        </button>
       )}
 
       <Map

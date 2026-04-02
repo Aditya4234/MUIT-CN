@@ -21,11 +21,11 @@ export function ARHudOverlay() {
           {(["tl", "tr", "bl", "br"] as const).map((corner) => (
             <div
               key={corner}
-              className={`absolute w-10 h-10 ${
+              className={`absolute w-8 h-8 sm:w-10 sm:h-10 ${
                 corner === "tl" ? "top-6 left-6 border-t-2 border-l-2" :
                 corner === "tr" ? "top-6 right-6 border-t-2 border-r-2" :
-                corner === "bl" ? "bottom-56 left-6 border-b-2 border-l-2" :
-                "bottom-56 right-6 border-b-2 border-r-2"
+                corner === "bl" ? "bottom-44 sm:bottom-56 left-6 border-b-2 border-l-2" :
+                "bottom-44 sm:bottom-56 right-6 border-b-2 border-r-2"
               } rounded-sm`}
               style={{ borderColor: "rgba(172, 138, 255, 0.6)" }}
             />

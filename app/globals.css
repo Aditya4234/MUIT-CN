@@ -24,9 +24,9 @@
 
 @theme inline {
   /* Fonts */
-  --font-display: var(--font-jakarta);
+  --font-display: var(--font-bricolage);
   --font-sans:    var(--font-inter);
-  --font-label:   var(--font-manrope);
+  --font-label:   var(--font-inter);
 }
 
 body {
@@ -69,4 +69,10 @@ body {
   font-size: 18px;
   padding: 4px 8px;
   color: #a3aac4;
+}
+
+/* ── Dev Tools Removal ─────────────────────────────────────────────────── */
+/* Remove Next.js Dev Tools Overlay (the "N" icon) */
+nextjs-portal {
+  display: none !important;
 }

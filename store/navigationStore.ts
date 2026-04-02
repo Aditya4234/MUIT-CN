@@ -7,10 +7,12 @@ interface NavigationState {
   viewMode: ViewMode;
   routeData: NavigationRoute | null;
   navSteps: ManeuverStep[];
+  isSidebarOpen: boolean; // Added
   selectDestination: (id: string) => void;
   setHoveredLocation: (id: string | null) => void;
   setViewMode: (mode: ViewMode) => void;
   setRouteData: (data: NavigationRoute) => void;
+  setSidebarOpen: (open: boolean) => void; // Added
   clearNavigation: () => void;
 }
 
@@ -20,9 +22,10 @@ export const useNavigationStore = create<NavigationState>((set) => ({
   viewMode: "2d-map",
   routeData: null,
   navSteps: [],
+  isSidebarOpen: false, // Added
 
   selectDestination: (id) =>
-    set({ selectedDestination: id, viewMode: "route-overview" }),
+    set({ selectedDestination: id, viewMode: "route-overview", isSidebarOpen: false }),
 
   setHoveredLocation: (id) => set({ hoveredLocation: id }),
 
@@ -31,6 +34,8 @@ export const useNavigationStore = create<NavigationState>((set) => ({
   setRouteData: (data) =>
     set({ routeData: data, navSteps: data.steps }),
 
+  setSidebarOpen: (open) => set({ isSidebarOpen: open }), // Added
+
   clearNavigation: () =>
     set({
       selectedDestination: null,
@@ -38,5 +43,6 @@ export const useNavigationStore = create<NavigationState>((set) => ({
       viewMode: "2d-map",
       routeData: null,
       navSteps: [],
+      isSidebarOpen: false, // Added
     }),
 }));
