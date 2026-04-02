@@ -3,7 +3,7 @@
 > **Published Research · IEEE Xplore** — Primary Author  
 > A web-based proof-of-concept demonstrating the core navigation UX of an in-house Flutter mobile app with AR/VR, built for real campus deployment.
 
-🔗 **[Live Demo](https://campus-navigation-poc.vercel.app)** &nbsp;·&nbsp; 📄 **[IEEE Paper](https://doi.org/10.1109/ICISS63372.2025.11076255)** &nbsp;·&nbsp; 🎬 **[Demo Video](#)**
+🔗 **[Live Demo](https://campus-navigation-poc.vercel.app)** &nbsp;·&nbsp; 📄 **[IEEE Paper](https://doi.org/10.1109/ICISS63372.2025.11076255)** &nbsp;·&nbsp; 🎬 **[Demo Video](https://youtu.be/HJCqn9e7Oqo)**
 
 ---
 
