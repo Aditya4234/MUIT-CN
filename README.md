@@ -1,25 +1,35 @@
 # AR/VR Campus Navigation System — POC
 
-**Web-based proof-of-concept · Published Research Paper Demo**
+> **Published Research · IEEE Xplore** — Primary Author  
+> A web-based proof-of-concept demonstrating the core navigation UX of an in-house Flutter mobile app with AR/VR, built for real campus deployment.
 
-> A Next.js app that simulates a full AR campus navigation experience inside a single Mapbox GL JS map instance — no Three.js, no WebXR, no separate 3D engine.
-
-🔗 **[Live Demo](https://campus-navigation-poc.vercel.app)** · 🎬 **[Demo Video](#)** · 📄 **[Research Paper](#)**
+🔗 **[Live Demo](https://campus-navigation-poc.vercel.app)** &nbsp;·&nbsp; 📄 **[IEEE Paper](https://doi.org/10.1109/ICISS63372.2025.11076255)** &nbsp;·&nbsp; 🎬 **[Demo Video](#)**
 
 ---
 
-## What It Does
+## Background
 
-Four progressive camera states on one map canvas, transitioning seamlessly:
+This project began as original research into AR/VR-assisted campus navigation — a real problem I observed at my college, where students, faculty, and visitors frequently struggled to locate buildings, rooms, and facilities.
 
-| Mode | Pitch | Description |
-|------|-------|-------------|
-| **1 — 2D Map** | 0° | Default idle state with interactive destination pins |
+The solution I designed and built:
+
+- **Real system (confidential, in-house)** — A Flutter + Mapbox mobile app for campus deployment. I collected all location data manually using a GPS device, labelled every building, block, canteen, washroom, library, basketball court, and more. The app works like Google Maps but scoped entirely to the campus with custom POIs and AR Core (Unity) integration.
+- **This POC** — A public web demo built to give the research community a tangible feel for how the system works. It faithfully recreates the four navigation modes of the real app using only Mapbox GL JS — no Three.js, no WebXR, no native AR SDK.
+
+The research paper documenting this system was **accepted and published on IEEE Xplore**, where I am the primary author.
+
+---
+
+## What the POC Demonstrates
+
+Four progressive navigation states on a **single Mapbox GL JS map instance**, transitioning seamlessly via camera parameter changes only — no re-renders, no canvas swaps:
+
+| Mode | Camera Pitch | What It Simulates |
+|------|-------------|-------------------|
+| **1 — 2D Map** | 0° | Idle state with interactive destination pins |
 | **2 — Route Overview** | 45° | Walking route polyline, bearing-aligned to destination |
-| **3 — Turn-by-Turn** | 60° | 3D buildings, terrain, directional arrow, step instructions |
-| **4 — AR Simulation** | 85° | Eye-level camera (1.7 m), fog atmosphere, holographic buildings, 3D neon path, AR markers |
-
-All transitions are camera parameter changes only — no re-renders or canvas replacement.
+| **3 — Turn-by-Turn** | 60° | 3D buildings, terrain DEM, directional arrow, step instructions |
+| **4 — AR Simulation** | 85° | Eye-level view (1.7 m), fog atmosphere, holographic buildings, 3D neon path, AR markers |
 
 ---
 
@@ -35,27 +45,43 @@ All transitions are camera parameter changes only — no re-renders or canvas re
 
 ---
 
-## Architecture
+## Key Engineering Decisions
 
-### Single Mapbox GL JS Instance
-
-The key innovation: four "views" are just pitch/zoom/bearing changes on one `mapboxgl.Map`. No separate 3D engines, no canvas swaps.
+### Single Map Instance Architecture
+The core insight: four visually distinct "modes" are achieved purely through `pitch`, `zoom`, and `bearing` changes on one `mapboxgl.Map` object — no separate rendering pipelines, no context switching.
 
 ```
 mapboxgl.Map
-  ├── Mode 1: pitch 0°,  zoom 15  — 2D flat map
+  ├── Mode 1: pitch 0°,  zoom 15   — 2D flat map
   ├── Mode 2: pitch 45°, fitBounds — route overview
-  ├── Mode 3: pitch 60°, zoom 18  — 3D turn-by-turn (terrain DEM)
-  └── Mode 4: pitch 85°, zoom 20  — AR simulation (FreeCameraOptions @ 1.7 m)
+  ├── Mode 3: pitch 60°, zoom 18   — 3D turn-by-turn
+  └── Mode 4: pitch 85°, zoom 20   — AR simulation (FreeCameraOptions @ 1.7 m AGL)
 ```
 
-### AR Mode Key Details
+### Eye-Level Camera (AR Simulation)
+In AR mode, the camera is placed at true eye level using Mapbox's `FreeCameraOptions` API:
 
-- **FreeCameraOptions API** — `MercatorCoordinate.fromLngLat(lngLat, 1.7)` positions camera at true eye level (1.7 m above ground)
-- **360° look-around** — click-and-drag (desktop) / DeviceOrientation (mobile) via `setPitchBearing()` preserving altitude
-- **3D neon path** — `@turf/buffer` converts route LineString → 2 m polygon → `fill-extrusion` + neon centerline glow
-- **Holographic buildings** — `fill-extrusion-emissive-strength: 1.0` makes buildings self-luminous, bypassing PBR shadows
-- **Atmosphere** — `map.setFog()` with dark blue `horizon-blend` hides the flat-map edge
+```js
+// Position camera at 1.7 m above ground — human eye level
+MercatorCoordinate.fromLngLat(lngLat, 1.7)
+```
+
+This gives a first-person street-view perspective without any native AR SDK. Users can look around 360° via click-and-drag (desktop) or `DeviceOrientation` (mobile).
+
+### 3D Neon Path
+The navigation route is extruded into a 3D walkable path in AR mode:
+
+```
+@turf/buffer  →  2 m polygon around LineString
+               →  fill-extrusion layer (neon glow)
+               +  centerline with emissive bloom
+```
+
+### Holographic Buildings
+Standard Mapbox buildings are made self-luminous by setting `fill-extrusion-emissive-strength: 1.0`, bypassing PBR shadow calculations to achieve a holographic/AR aesthetic.
+
+### Atmosphere & Immersion
+`map.setFog()` with a dark blue `horizon-blend` hides the flat-map edge, completing the illusion of an immersive AR environment at the edge of the viewport.
 
 ---
 
@@ -63,51 +89,14 @@ mapboxgl.Map
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Next.js 15 (App Router) |
+| Framework | Next.js 16 (App Router) |
 | Map Engine | Mapbox GL JS v3 + react-map-gl v8 |
-| State | Zustand v5 |
+| State Management | Zustand v5 |
 | Animations | Framer Motion |
 | Geospatial | @turf/buffer, @turf/helpers |
 | Styling | Tailwind CSS v4 |
 | Notifications | Sonner |
-
----
-
-## Research Paper
-
-> **"AR-Based Indoor/Outdoor Campus Navigation Using Web Technologies"**
->
-> 📄 [Link to paper](#)
-
-This POC demonstrates the core navigation UX described in the paper — specifically the progressive camera simulation of an AR overlay using standard web map APIs.
-
----
-
-## Confidentiality Note
-
-This is a **proof-of-concept** web demo of a university in-house mobile app (Flutter/AR) currently under development. All coordinates used are publicly visible satellite data. No proprietary data or internal systems are exposed.
-
----
-
-## How to Run Locally
-
-```bash
-# Clone
-git clone https://github.com/ripunjkashyap-a11y/campus-navigation-poc.git
-cd campus-navigation-poc
-
-# Install
-npm install
-
-# Environment — create .env.local
-echo "NEXT_PUBLIC_MAPBOX_TOKEN=pk.your_token_here" > .env.local
-
-# Dev server
-npm run dev
-# → http://localhost:3000
-```
-
-Requires a free [Mapbox account](https://account.mapbox.com/) and access token.
+| Deployment | Vercel |
 
 ---
 
@@ -116,13 +105,47 @@ Requires a free [Mapbox account](https://account.mapbox.com/) and access token.
 ```
 app/                    # Next.js App Router
 components/
-  ar/                   # AR HUD overlay
-  map/                  # Map layers (route, buildings, markers)
+  ar/                   # AR HUD overlay components
+  map/                  # Map layers — route, buildings, markers
   navigation/           # Info panel, turn-by-turn overlay
   search/               # Location search
-  ui/                   # Mode indicator
+  ui/                   # Mode indicator, loading overlay
 constants/              # Campus coordinates (single source of truth)
 hooks/                  # useARControls, useDirections, useSearch
 store/                  # Zustand navigation store
-utils/                  # Bearing, distance, fog config
+utils/                  # Bearing, distance, fog config helpers
 ```
+
+---
+
+## Run Locally
+
+```bash
+git clone https://github.com/ripunjkashyap-a11y/campus-navigation-poc.git
+cd campus-navigation-poc
+npm install
+
+# Create .env.local with your Mapbox token
+echo "NEXT_PUBLIC_MAPBOX_TOKEN=pk.your_token_here" > .env.local
+
+npm run dev
+# → http://localhost:3000
+```
+
+Requires a free [Mapbox account](https://account.mapbox.com/) and public token.
+
+---
+
+## Research Paper
+
+> **"AR/VR based Campus Navigation System (CNS)"**  
+> Published on **IEEE Xplore** · Primary Author  
+> 📄 [https://doi.org/10.1109/ICISS63372.2025.11076255](https://doi.org/10.1109/ICISS63372.2025.11076255)
+
+The paper covers the full system design including manual GPS data collection methodology, AR Core integration, accessibility considerations (voice-guided navigation, customizable routes), and real-time event/closure update infrastructure.
+
+---
+
+## Confidentiality Note
+
+The real production system (Flutter mobile app, raw GPS dataset, campus coordinate database) is an in-house university project and is not publicly available. This POC is an independent web demo built solely to demonstrate the navigation UX concept described in the published research.
