@@ -37,11 +37,11 @@ Four progressive navigation states on a **single Mapbox GL JS map instance**, tr
 
 | 2D Map | Route Overview |
 |--------|---------------|
-| *(screenshot)* | *(screenshot)* |
+| ![2D Map](screenshots/01-2d-map.png) | ![Route Overview](screenshots/02-route-overview.png) |
 
 | Turn-by-Turn | AR Simulation |
 |-------------|---------------|
-| *(screenshot)* | *(screenshot)* |
+| ![Turn-by-Turn](screenshots/03-turn-by-turn.png) | ![AR Simulation](screenshots/04-ar-simulation.png) |
 
 ---
 

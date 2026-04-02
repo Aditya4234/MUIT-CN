@@ -37,7 +37,7 @@ yarn-error.log*
 .env*
 
 # vercel
-.vercel
+.vercel/
 
 # typescript
 *.tsbuildinfo
@@ -49,8 +49,9 @@ next-env.d.ts
 # Playwright MCP files
 .playwright-mcp/
 
-# Screenshots and images
+# Screenshots and images (except committed screenshots folder)
 *.png
+!screenshots/*.png
 
 # IDE workspace files
 *.code-workspace
@@ -63,6 +64,7 @@ task.md
 walkthrough.md
 uidesign.md
 dev_plan.md
+demoreadme.md
 git_status.txt
 *.log
 
@@ -76,4 +78,8 @@ Desktop.ini
 *.swp
 *.swo
 
-.vercel
+# Sensitive key/cert files
+*.key
+*.p12
+*.pfx
+.npmrc
