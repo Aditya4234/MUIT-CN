@@ -56,7 +56,7 @@ export function DestinationPin({ location, onSelect }: DestinationPinProps) {
             color: isSelected ? "#060e20" : "#dee5ff",
             outline: `1px solid ${isActive ? MARKER_COLOR : "rgba(172,138,255,0.3)"}`,
             opacity: isActive ? 1 : 0.8,
-            fontFamily: "var(--font-manrope)",
+            fontFamily: "var(--font-inter)",
           }}
         >
           {location.label.split(" ")[0]}

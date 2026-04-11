@@ -1,17 +1,11 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Navigation, Radio, Building2, BookOpen, Trophy, UtensilsCrossed, X } from "lucide-react";
+import { Navigation, Radio, Building2, X } from "lucide-react";
 import { useNavigationStore } from "@/store/navigationStore";
 import { CAMPUS_LOCATIONS } from "@/constants/locations";
+import { LOCATION_ICONS } from "@/constants/locationIcons";
 import { formatDistance, formatDuration } from "@/utils/formatDistance";
-
-const LOCATION_ICONS: Record<string, React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>> = {
-  admin: Building2,
-  library: BookOpen,
-  basketball: Trophy,
-  canteen: UtensilsCrossed,
-};
 
 export function NavigationInfoPanel() {
   const { selectedDestination, routeData, viewMode, setViewMode, clearNavigation } = useNavigationStore();

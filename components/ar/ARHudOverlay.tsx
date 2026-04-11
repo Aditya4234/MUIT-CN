@@ -47,7 +47,7 @@ export function ARHudOverlay() {
               />
               <span
                 className="text-xs font-semibold tracking-widest uppercase"
-                style={{ color: "#ac8aff", fontFamily: "var(--font-manrope)" }}
+                style={{ color: "#ac8aff", fontFamily: "var(--font-inter)" }}
               >
                 AR Navigation
               </span>
@@ -68,7 +68,7 @@ export function ARHudOverlay() {
             animate={{ opacity: 0 }}
             transition={{ delay: 3, duration: 1.5 }}
             className="absolute left-1/2 -translate-x-1/2 text-xs tracking-wide whitespace-nowrap"
-            style={{ bottom: "15.5rem", color: "rgba(163,170,196,0.6)", fontFamily: "var(--font-manrope)" }}
+            style={{ bottom: "15.5rem", color: "rgba(163,170,196,0.6)", fontFamily: "var(--font-inter)" }}
           >
             Move mouse or tilt phone to look around
           </motion.p>

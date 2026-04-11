@@ -24,7 +24,8 @@ export function useARControls(
     if (!map) return;
 
     const canvas = map.getCanvas();
-    const mapInstance = map;
+    // Captured here so TypeScript preserves the narrowed non-null type inside closures.
+    const m = map;
 
     // Desktop: click-and-drag → bearing
     let isDragging = false;
@@ -34,13 +35,13 @@ export function useARControls(
     function onMouseDown(e: MouseEvent) {
       isDragging = true;
       dragStartX = e.clientX;
-      dragStartBearing = mapInstance.getBearing();
+      dragStartBearing = m.getBearing();
       canvas.style.cursor = "grabbing";
     }
     function onMouseMove(e: MouseEvent) {
       if (!isDragging) return;
       const delta = (e.clientX - dragStartX) / window.innerWidth * 360;
-      setARBearing(mapInstance, dragStartBearing - delta);
+      setARBearing(m, dragStartBearing - delta);
     }
     function onMouseUp() {
       isDragging = false;
@@ -49,7 +50,7 @@ export function useARControls(
 
     // Mobile: device orientation → bearing
     function onDeviceOrientation(e: DeviceOrientationEvent) {
-      if (e.alpha !== null) setARBearing(mapInstance, e.alpha);
+      if (e.alpha !== null) setARBearing(m, e.alpha);
     }
 
     // Touch: swipe left/right → bearing
@@ -57,11 +58,11 @@ export function useARControls(
     let startBearing = 0;
     function onTouchStart(e: TouchEvent) {
       touchStartX = e.touches[0].clientX;
-      startBearing = mapInstance.getBearing();
+      startBearing = m.getBearing();
     }
     function onTouchMove(e: TouchEvent) {
       const delta = (e.touches[0].clientX - touchStartX) / window.innerWidth * 360;
-      setARBearing(mapInstance, startBearing - delta);
+      setARBearing(m, startBearing - delta);
     }
 
     canvas.style.cursor = "grab";

@@ -27,6 +27,17 @@ const STYLES = {
   satellite: "mapbox://styles/mapbox/satellite-streets-v12",
 };
 
+function fitRouteBounds(map: mapboxgl.Map, dest: { lat: number; lng: number }) {
+  const bearing = calculateBearing(COLLEGE_GATE.lat, COLLEGE_GATE.lng, dest.lat, dest.lng);
+  map.fitBounds(
+    [
+      [Math.min(COLLEGE_GATE.lng, dest.lng), Math.min(COLLEGE_GATE.lat, dest.lat)],
+      [Math.max(COLLEGE_GATE.lng, dest.lng), Math.max(COLLEGE_GATE.lat, dest.lat)],
+    ],
+    { padding: { top: 120, bottom: 220, left: 80, right: 80 }, pitch: 45, bearing, duration: 1500 }
+  );
+}
+
 export function CampusMap() {
   const mapRef = useRef<MapRef>(null);
   const arMarkersRef = useRef<mapboxgl.Marker[]>([]);
@@ -64,12 +75,9 @@ export function CampusMap() {
     ? calculateBearing(COLLEGE_GATE.lat, COLLEGE_GATE.lng, dest.lat, dest.lng)
     : 0;
 
-  // Mode 3: map is already rotated to firstStepBearing, so arrow = 0° (points forward/up).
   // Mode 4: arrow points toward destination relative to current camera bearing.
-  const arrowBearing =
-    viewMode === "ar-simulation"   ? destBearing - mapBearing :
-    viewMode === "turn-by-turn"    ? 0 :
-    0;
+  // Mode 3: map is rotated to firstStepBearing, so 0° points forward.
+  const arrowBearing = viewMode === "ar-simulation" ? destBearing - mapBearing : 0;
 
   // 360° look-around for AR mode
   useARControls(mapRef, isAR);
@@ -91,23 +99,7 @@ export function CampusMap() {
         const map = mapRef.current?.getMap();
         if (!map) return;
 
-        const routeBearing = calculateBearing(
-          COLLEGE_GATE.lat, COLLEGE_GATE.lng,
-          dest.lat, dest.lng
-        );
-
-        map.fitBounds(
-          [
-            [Math.min(COLLEGE_GATE.lng, dest.lng), Math.min(COLLEGE_GATE.lat, dest.lat)],
-            [Math.max(COLLEGE_GATE.lng, dest.lng), Math.max(COLLEGE_GATE.lat, dest.lat)],
-          ],
-          {
-            padding: { top: 120, bottom: 220, left: 80, right: 80 },
-            pitch: 45,
-            bearing: routeBearing,
-            duration: 1500,
-          }
-        );
+        fitRouteBounds(map, dest);
       })
       .catch(() => toast.error("Could not load route. Check your Mapbox token."))
       .finally(() => setLoadingRoute(false));
@@ -117,10 +109,6 @@ export function CampusMap() {
   useEffect(() => {
     const map = mapRef.current?.getMap();
     if (!map) return;
-
-    // Remove existing markers
-    arMarkersRef.current.forEach((m) => m.remove());
-    arMarkersRef.current = [];
 
     if (viewMode !== "ar-simulation") return;
 
@@ -189,31 +177,15 @@ export function CampusMap() {
     const dest = CAMPUS_LOCATIONS.find((l) => l.id === selectedDestination);
 
     if (viewMode === "route-overview" && dest) {
-      const routeBearing = calculateBearing(
-        COLLEGE_GATE.lat, COLLEGE_GATE.lng,
-        dest.lat, dest.lng
-      );
       try { map.setTerrain(null); } catch { /* ignore */ }
       try { map.setFog({}); } catch { /* ignore */ }
-      map.fitBounds(
-        [
-          [Math.min(COLLEGE_GATE.lng, dest.lng), Math.min(COLLEGE_GATE.lat, dest.lat)],
-          [Math.max(COLLEGE_GATE.lng, dest.lng), Math.max(COLLEGE_GATE.lat, dest.lat)],
-        ],
-        {
-          padding: { top: 120, bottom: 220, left: 80, right: 80 },
-          pitch: 45,
-          bearing: routeBearing,
-          duration: 1500,
-        }
-      );
+      fitRouteBounds(map, dest);
       map.dragPan.enable();
       map.scrollZoom.enable();
     } else if (viewMode === "turn-by-turn") {
       // Sidebar unmounts when entering this mode — resize so the canvas fills the
       // now-wider container before the camera animation uses the new dimensions.
       map.resize();
-      const firstBearing = firstStepBearing;
       // Set terrain before camera animation so it doesn't interrupt easeTo
       if (!map.getSource("mapbox-dem")) {
         map.addSource("mapbox-dem", { type: "raster-dem", url: "mapbox://mapbox.mapbox-terrain-dem-v1", tileSize: 512, maxzoom: 14 });
@@ -222,7 +194,7 @@ export function CampusMap() {
       try { map.setFog({}); } catch { /* ignore */ }
       map.easeTo({
         pitch: 60,
-        bearing: firstBearing,
+        bearing: firstStepBearing,
         zoom: 18,
         center: [COLLEGE_GATE.lng, COLLEGE_GATE.lat],
         duration: 2000,
@@ -257,7 +229,6 @@ export function CampusMap() {
       });
       map.dragPan.disable();
       map.scrollZoom.disable();
-      toast.info("AR Simulation — look around to explore");
     }
   }, [viewMode]); // eslint-disable-line react-hooks/exhaustive-deps
 

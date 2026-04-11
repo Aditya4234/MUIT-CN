@@ -1,21 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { Search, X, Building2, BookOpen, Trophy, UtensilsCrossed, ChevronRight } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Search, X, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigationStore } from "@/store/navigationStore";
 import { CAMPUS_LOCATIONS, COLLEGE_GATE } from "@/constants/locations";
 import { haversineDistance } from "@/utils/bearing";
 import { formatDistance } from "@/utils/formatDistance";
 import { useSearch } from "@/hooks/useSearch";
+import { LOCATION_ICONS } from "@/constants/locationIcons";
 import type { CampusLocation } from "@/types";
-
-const LOCATION_ICONS: Record<string, React.ComponentType<{ size?: number; style?: React.CSSProperties }>> = {
-  admin:      Building2,
-  library:    BookOpen,
-  basketball: Trophy,
-  canteen:    UtensilsCrossed,
-};
 
 const ICON_COLORS: Record<string, string> = {
   admin:      "#85adff",
@@ -33,6 +27,13 @@ const LOCATION_STATUS: Record<string, { isOpen: boolean }> = {
 
 type Filter = "all" | "nearest" | "open";
 
+const LOCATION_DISTANCES: Record<string, number> = Object.fromEntries(
+  CAMPUS_LOCATIONS.map((l) => [
+    l.id,
+    haversineDistance(COLLEGE_GATE.lat, COLLEGE_GATE.lng, l.lat, l.lng),
+  ])
+);
+
 export function Sidebar() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
@@ -41,22 +42,17 @@ export function Sidebar() {
     selectedDestination, viewMode, isSidebarOpen, setSidebarOpen
   } = useNavigationStore();
   const searchResults = useSearch(query);
+  const isSearching = query.length > 0;
+  const displayList = useMemo((): readonly CampusLocation[] => {
+    if (filter === "open")
+      return CAMPUS_LOCATIONS.filter((l) => LOCATION_STATUS[l.id]?.isOpen) as CampusLocation[];
+    if (filter === "nearest")
+      return [...CAMPUS_LOCATIONS].sort((a, b) => LOCATION_DISTANCES[a.id] - LOCATION_DISTANCES[b.id]) as CampusLocation[];
+    return CAMPUS_LOCATIONS;
+  }, [filter]);
 
   // All hooks above — safe to early-return now
   if (viewMode === "ar-simulation" || viewMode === "turn-by-turn") return null;
-
-  const isSearching = query.length > 0;
-
-  let displayList: readonly CampusLocation[] = CAMPUS_LOCATIONS;
-  if (filter === "open") {
-    displayList = CAMPUS_LOCATIONS.filter((l) => LOCATION_STATUS[l.id]?.isOpen);
-  } else if (filter === "nearest") {
-    displayList = [...CAMPUS_LOCATIONS].sort((a, b) => {
-      const da = haversineDistance(COLLEGE_GATE.lat, COLLEGE_GATE.lng, a.lat, a.lng);
-      const db = haversineDistance(COLLEGE_GATE.lat, COLLEGE_GATE.lng, b.lat, b.lng);
-      return da - db;
-    });
-  }
 
   const finalList: readonly CampusLocation[] = isSearching ? searchResults : displayList;
 
@@ -221,7 +217,7 @@ export function Sidebar() {
             const isSelected = selectedDestination === loc.id;
             const isHovered = hoveredLocation === loc.id;
             const isActive = isSelected || isHovered;
-            const dist = haversineDistance(COLLEGE_GATE.lat, COLLEGE_GATE.lng, loc.lat, loc.lng);
+            const dist = LOCATION_DISTANCES[loc.id];
 
             return (
               <motion.button

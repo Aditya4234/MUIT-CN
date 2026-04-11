@@ -22,7 +22,7 @@ export function MapStyleToggle({ isSatellite, onToggle }: MapStyleToggleProps) {
         WebkitBackdropFilter: "blur(12px)",
         outline: "1px solid rgba(64, 72, 93, 0.3)",
         color: "#a3aac4",
-        fontFamily: "var(--font-manrope)",
+        fontFamily: "var(--font-inter)",
         boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
       }}
     >

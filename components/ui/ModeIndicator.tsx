@@ -36,7 +36,7 @@ export function ModeIndicator() {
           <Icon size={12} style={{ color: accent }} />
           <span
             className="text-xs font-medium"
-            style={{ color: accent, fontFamily: "var(--font-manrope)" }}
+            style={{ color: accent, fontFamily: "var(--font-inter)" }}
           >
             {label}
           </span>

@@ -59,14 +59,15 @@ next-env.d.ts
 # Antigravity/Gemini internal files
 .gemini/
 brain/
-implementation_plan.md
-task.md
-walkthrough.md
-uidesign.md
-dev_plan.md
-demoreadme.md
 git_status.txt
 *.log
+
+# Markdown files (project docs stay local, only README is public)
+*.md
+!README.md
+
+# Misc project files
+RUN_PROJECT.txt
 
 # Windows
 Thumbs.db
