@@ -9,20 +9,51 @@ import { haversineDistance } from "@/utils/bearing";
 import { formatDistance } from "@/utils/formatDistance";
 import { useSearch } from "@/hooks/useSearch";
 import { LOCATION_ICONS } from "@/constants/locationIcons";
+import { AuthControls } from "./AuthControls";
 import type { CampusLocation } from "@/types";
 
 const ICON_COLORS: Record<string, string> = {
-  admin:      "#85adff",
-  library:    "#ac8aff",
-  basketball: "#f59e0b",
-  canteen:    "#9bffce",
+  admin:       "#85adff",
+  "second-gate": "#60a5fa",
+  library:     "#ac8aff",
+  engineering: "#f59e0b",
+  "engineering-workshop": "#38bdf8",
+  canteen:     "#9bffce",
+  "second-canteen": "#4ade80",
+  auditorium:  "#ff6b6b",
+  "boys-hostel":  "#06b6d4",
+  "girls-hostel": "#ec4899",
+  playground:  "#f97316",
+  "computer-lab": "#14b8a6",
+  "programming-lab": "#2dd4bf",
+  pharmacy:    "#a855f7",
+  "chancellors-house": "#fb7185",
+  commerce:    "#eab308",
+  science:     "#6366f1",
+  humanities:  "#d946ef",
+  parking:     "#78716c",
 };
 
 const LOCATION_STATUS: Record<string, { isOpen: boolean }> = {
-  admin:      { isOpen: true  },
-  library:    { isOpen: true  },
-  basketball: { isOpen: true  },
-  canteen:    { isOpen: false },
+  admin:       { isOpen: true  },
+  "second-gate":  { isOpen: true  },
+  library:     { isOpen: true  },
+  engineering: { isOpen: true  },
+  "engineering-workshop": { isOpen: true  },
+  canteen:     { isOpen: true  },
+  "second-canteen": { isOpen: true  },
+  auditorium:  { isOpen: false },
+  "boys-hostel":  { isOpen: true  },
+  "girls-hostel": { isOpen: true  },
+  playground:  { isOpen: true  },
+  "computer-lab": { isOpen: true  },
+  "programming-lab": { isOpen: true  },
+  pharmacy:    { isOpen: true  },
+  "chancellors-house": { isOpen: true  },
+  commerce:    { isOpen: true  },
+  science:     { isOpen: true  },
+  humanities:  { isOpen: true  },
+  parking:     { isOpen: true  },
 };
 
 type Filter = "all" | "nearest" | "open";
@@ -118,7 +149,7 @@ export function Sidebar() {
               className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-40 ml-0.5"
               style={{ color: "var(--on-surface-muted)", fontFamily: "var(--font-inter)" }}
             >
-              SATHYABAMA UNIVERSITY
+              MAHARISHI UNIVERSITY OF INFORMATION TECHNOLOGY
             </p>
           </div>
       </div>
@@ -289,13 +320,14 @@ export function Sidebar() {
       </div>
 
       {/* Footer */}
-      <div className="px-6 py-5 mt-auto relative" style={{ borderTop: "1px solid rgba(133, 173, 255, 0.05)" }}>
+      <div className="px-6 py-5 mt-auto relative space-y-3" style={{ borderTop: "1px solid rgba(133, 173, 255, 0.05)" }}>
+        <AuthControls />
         <div className="flex items-center justify-center gap-2 opacity-30 group hover:opacity-100 transition-opacity">
           <p
             className="text-[10px] font-black uppercase tracking-[0.2em]"
             style={{ color: "var(--on-surface-muted)", fontFamily: "var(--font-inter)" }}
           >
-            {CAMPUS_LOCATIONS.length} COORDINATES · CNS
+              {CAMPUS_LOCATIONS.length} COORDINATES · MUIT NAVIGATOR
           </p>
         </div>
       </div>

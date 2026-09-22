@@ -257,9 +257,9 @@ export function CampusMap() {
         ref={mapRef}
         mapboxAccessToken={MAPBOX_TOKEN}
         initialViewState={{
-          latitude: 12.8725,
-          longitude: 80.222,
-          zoom: 15,
+          latitude: 26.929,
+          longitude: 80.9283,
+          zoom: 16,
           pitch: 0,
           bearing: 0,
         }}

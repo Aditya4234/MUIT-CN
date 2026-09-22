@@ -5,6 +5,7 @@ export interface CampusLocation {
   lng: number;
   color: string;
   icon: string;
+  marked: boolean;
   searchTerms: readonly string[];
 }
 
