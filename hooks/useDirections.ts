@@ -5,12 +5,14 @@ const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 
 export async function getDirections(
   destLat: number,
-  destLng: number
+  destLng: number,
+  origin?: { lat: number; lng: number }
 ): Promise<NavigationRoute> {
+  const from = origin ?? COLLEGE_GATE;
   // Directions API uses lng,lat order
   const url =
     `https://api.mapbox.com/directions/v5/mapbox/walking/` +
-    `${COLLEGE_GATE.lng},${COLLEGE_GATE.lat};${destLng},${destLat}` +
+    `${from.lng},${from.lat};${destLng},${destLat}` +
     `?geometries=geojson&steps=true&overview=full&access_token=${TOKEN}`;
 
   const res = await fetch(url);
@@ -24,6 +26,7 @@ export async function getDirections(
     maneuver: { instruction: string; type: string; modifier?: string; bearing_after: number };
     distance: number;
     duration: number;
+    geometry: { coordinates: [number, number][] };
   }) => ({
     instruction: s.maneuver.instruction,
     distance: s.distance,
@@ -33,6 +36,7 @@ export async function getDirections(
       modifier: s.maneuver.modifier,
       bearing_after: s.maneuver.bearing_after,
     },
+    coordinates: s.geometry?.coordinates ?? [],
   }));
 
   return {

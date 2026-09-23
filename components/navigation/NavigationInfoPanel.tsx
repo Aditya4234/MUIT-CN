@@ -3,12 +3,14 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Navigation, Radio, Building2, X } from "lucide-react";
 import { useNavigationStore } from "@/store/navigationStore";
+import { useRouteProgress } from "@/hooks/useRouteProgress";
 import { CAMPUS_LOCATIONS } from "@/constants/locations";
 import { LOCATION_ICONS } from "@/constants/locationIcons";
 import { formatDistance, formatDuration } from "@/utils/formatDistance";
 
 export function NavigationInfoPanel() {
   const { selectedDestination, routeData, viewMode, setViewMode, clearNavigation } = useNavigationStore();
+  const progress = useRouteProgress();
 
   const location = selectedDestination
     ? CAMPUS_LOCATIONS.find((l) => l.id === selectedDestination)
@@ -18,6 +20,12 @@ export function NavigationInfoPanel() {
     !!location &&
     !!routeData &&
     (viewMode === "route-overview" || viewMode === "turn-by-turn" || viewMode === "ar-simulation");
+
+  // Live remaining stats while walking — fall back to full-route totals.
+  const liveDistance = progress?.remainingDistanceM ?? routeData?.distance ?? 0;
+  const liveDuration = progress
+    ? routeData!.duration * (1 - progress.progressRatio)
+    : routeData?.duration ?? 0;
 
   return (
     <AnimatePresence>
@@ -83,7 +91,7 @@ export function NavigationInfoPanel() {
                     className="text-[11px] mt-1 font-bold opacity-70"
                     style={{ color: "var(--on-surface-muted)", fontFamily: "var(--font-inter)" }}
                   >
-                    {formatDistance(routeData.distance)} <span className="opacity-30">·</span> {formatDuration(routeData.duration)}
+                    {formatDistance(liveDistance)} <span className="opacity-30">·</span> {formatDuration(liveDuration)}
                   </p>
                 </div>
               </motion.div>
@@ -120,7 +128,7 @@ export function NavigationInfoPanel() {
                     }}
                   >
                     <Radio size={16} />
-                    AR View
+                    MUIT View
                   </button>
                 </motion.div>
               )}
@@ -157,7 +165,7 @@ export function NavigationInfoPanel() {
                     fontFamily: "var(--font-inter)",
                   }}
                 >
-                  Exit AR
+                  Exit MUIT
                 </motion.button>
               )}
             </div>

@@ -20,6 +20,8 @@ export interface ManeuverStep {
     modifier?: string;
     bearing_after: number;
   };
+  /** Step polyline as [lng, lat] pairs — used to auto-advance steps as you walk. */
+  coordinates: [number, number][];
 }
 
 export interface NavigationRoute {

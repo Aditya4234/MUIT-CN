@@ -10,6 +10,7 @@ import {
   Flag,
 } from "lucide-react";
 import { useNavigationStore } from "@/store/navigationStore";
+import { useRouteProgress } from "@/hooks/useRouteProgress";
 import { formatDistance } from "@/utils/formatDistance";
 
 function ManeuverIcon({ type, modifier }: { type: string; modifier?: string }) {
@@ -24,9 +25,19 @@ function ManeuverIcon({ type, modifier }: { type: string; modifier?: string }) {
 }
 
 export function TurnByTurnOverlay() {
-  const { viewMode, navSteps } = useNavigationStore();
+  const { viewMode, navSteps, currentStepIndex, userLocation } = useNavigationStore();
+  const progress = useRouteProgress();
   const visible = viewMode === "turn-by-turn";
-  const step = navSteps[0];
+  // Active step advances automatically as you walk (kept in the store).
+  const step = navSteps[Math.min(currentStepIndex, navSteps.length - 1)];
+  const nextStep = navSteps[Math.min(currentStepIndex + 1, navSteps.length - 1)];
+
+  // Live remaining distance along the route; falls back to the step estimate.
+  const remainingM = progress?.remainingDistanceM ?? step?.distance ?? null;
+  const speedKmh =
+    userLocation?.speed != null && userLocation.speed > 0.3
+      ? userLocation.speed * 3.6
+      : null;
 
   return (
     <AnimatePresence>
@@ -55,7 +66,7 @@ export function TurnByTurnOverlay() {
                 <ManeuverIcon type={step.maneuver.type} modifier={step.maneuver.modifier} />
               </div>
 
-              {/* Instruction + distance */}
+              {/* Instruction + live remaining distance */}
               <div className="flex-1 min-w-0">
                 <p
                   className="font-bold text-sm leading-snug tracking-tight"
@@ -67,13 +78,16 @@ export function TurnByTurnOverlay() {
                   className="text-[11px] mt-1 font-bold opacity-60"
                   style={{ color: "var(--on-surface-muted)", fontFamily: "var(--font-inter)" }}
                 >
-                  {formatDistance(step.distance)} remaining
+                  {remainingM != null ? `${formatDistance(remainingM)} remaining` : "Calculating…"}
+                  {speedKmh != null && (
+                    <span className="opacity-80"> · 🚶 {speedKmh.toFixed(1)} km/h</span>
+                  )}
                 </p>
               </div>
             </div>
 
             {/* Next step preview — Tonal separation */}
-            {navSteps[1] && (
+            {nextStep && nextStep !== step && (
               <div
                 className="flex items-center gap-3 px-5 py-2.5 bg-white/5 border-t border-white/5"
               >
@@ -84,7 +98,7 @@ export function TurnByTurnOverlay() {
                   className="text-[11px] font-bold truncate flex-1 opacity-80"
                   style={{ color: "var(--on-surface)", fontFamily: "var(--font-inter)" }}
                 >
-                  {navSteps[1].instruction}
+                  {nextStep.instruction}
                 </p>
               </div>
             )}

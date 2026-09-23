@@ -58,29 +58,40 @@ const LOCATION_STATUS: Record<string, { isOpen: boolean }> = {
 
 type Filter = "all" | "nearest" | "open";
 
-const LOCATION_DISTANCES: Record<string, number> = Object.fromEntries(
-  CAMPUS_LOCATIONS.map((l) => [
-    l.id,
-    haversineDistance(COLLEGE_GATE.lat, COLLEGE_GATE.lng, l.lat, l.lng),
-  ])
-);
+function distanceFromOrigin(
+  origin: { lat: number; lng: number },
+  loc: { lat: number; lng: number }
+) {
+  return haversineDistance(origin.lat, origin.lng, loc.lat, loc.lng);
+}
 
 export function Sidebar() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const {
     selectDestination, setHoveredLocation, hoveredLocation,
-    selectedDestination, viewMode, isSidebarOpen, setSidebarOpen
+    selectedDestination, viewMode, isSidebarOpen, setSidebarOpen,
+    userLocation
   } = useNavigationStore();
   const searchResults = useSearch(query);
   const isSearching = query.length > 0;
+  // Live origin for distances — GPS fix when available, gate as fallback
+  const origin = userLocation ?? COLLEGE_GATE;
+  const distances = useMemo(
+    () =>
+      Object.fromEntries(
+        CAMPUS_LOCATIONS.map((l) => [l.id, distanceFromOrigin(origin, l)])
+      ) as Record<string, number>,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [userLocation?.lat, userLocation?.lng]
+  );
   const displayList = useMemo((): readonly CampusLocation[] => {
     if (filter === "open")
       return CAMPUS_LOCATIONS.filter((l) => LOCATION_STATUS[l.id]?.isOpen) as CampusLocation[];
     if (filter === "nearest")
-      return [...CAMPUS_LOCATIONS].sort((a, b) => LOCATION_DISTANCES[a.id] - LOCATION_DISTANCES[b.id]) as CampusLocation[];
+      return [...CAMPUS_LOCATIONS].sort((a, b) => distances[a.id] - distances[b.id]) as CampusLocation[];
     return CAMPUS_LOCATIONS;
-  }, [filter]);
+  }, [filter, distances]);
 
   // All hooks above — safe to early-return now
   if (viewMode === "ar-simulation" || viewMode === "turn-by-turn") return null;
@@ -248,7 +259,7 @@ export function Sidebar() {
             const isSelected = selectedDestination === loc.id;
             const isHovered = hoveredLocation === loc.id;
             const isActive = isSelected || isHovered;
-            const dist = LOCATION_DISTANCES[loc.id];
+            const dist = distances[loc.id];
 
             return (
               <motion.button
