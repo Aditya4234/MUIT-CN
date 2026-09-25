@@ -24,23 +24,23 @@ The research paper documenting this system was **accepted and published on IEEE 
 
 Four progressive navigation states on a **single Mapbox GL JS map instance**, transitioning seamlessly via camera parameter changes only — no re-renders, no canvas swaps:
 
-| Mode | Camera Pitch | What It Simulates |
-|------|-------------|-------------------|
-| **1 — 2D Map** | 0° | Idle state with interactive destination pins |
-| **2 — Route Overview** | 45° | Walking route polyline, bearing-aligned to destination |
-| **3 — Turn-by-Turn** | 60° | 3D buildings, terrain DEM, directional arrow, step instructions |
-| **4 — AR Simulation** | 85° | Eye-level view (1.7 m), fog atmosphere, holographic buildings, 3D neon path, AR markers |
+| Mode                   | Camera Pitch | What It Simulates                                                                       |
+| ---------------------- | ------------ | --------------------------------------------------------------------------------------- |
+| **1 — 2D Map**         | 0°           | Idle state with interactive destination pins                                            |
+| **2 — Route Overview** | 45°          | Walking route polyline, bearing-aligned to destination                                  |
+| **3 — Turn-by-Turn**   | 60°          | 3D buildings, terrain DEM, directional arrow, step instructions                         |
+| **4 — AR Simulation**  | 85°          | Eye-level view (1.7 m), fog atmosphere, holographic buildings, 3D neon path, AR markers |
 
 ---
 
 ## Screenshots
 
-| 2D Map | Route Overview |
-|--------|---------------|
+| 2D Map                               | Route Overview                                       |
+| ------------------------------------ | ---------------------------------------------------- |
 | ![2D Map](screenshots/01-2d-map.png) | ![Route Overview](screenshots/02-route-overview.png) |
 
-| Turn-by-Turn | AR Simulation |
-|-------------|---------------|
+| Turn-by-Turn                                     | AR Simulation                                      |
+| ------------------------------------------------ | -------------------------------------------------- |
 | ![Turn-by-Turn](screenshots/03-turn-by-turn.png) | ![AR Simulation](screenshots/04-ar-simulation.png) |
 
 ---
@@ -48,6 +48,7 @@ Four progressive navigation states on a **single Mapbox GL JS map instance**, tr
 ## Key Engineering Decisions
 
 ### Single Map Instance Architecture
+
 The core insight: four visually distinct "modes" are achieved purely through `pitch`, `zoom`, and `bearing` changes on one `mapboxgl.Map` object — no separate rendering pipelines, no context switching.
 
 ```
@@ -59,16 +60,18 @@ mapboxgl.Map
 ```
 
 ### Eye-Level Camera (AR Simulation)
+
 In AR mode, the camera is placed at true eye level using Mapbox's `FreeCameraOptions` API:
 
 ```js
 // Position camera at 1.7 m above ground — human eye level
-MercatorCoordinate.fromLngLat(lngLat, 1.7)
+MercatorCoordinate.fromLngLat(lngLat, 1.7);
 ```
 
 This gives a first-person street-view perspective without any native AR SDK. Users can look around 360° via click-and-drag (desktop) or `DeviceOrientation` (mobile).
 
 ### 3D Neon Path
+
 The navigation route is extruded into a 3D walkable path in AR mode:
 
 ```
@@ -78,25 +81,27 @@ The navigation route is extruded into a 3D walkable path in AR mode:
 ```
 
 ### Holographic Buildings
+
 Standard Mapbox buildings are made self-luminous by setting `fill-extrusion-emissive-strength: 1.0`, bypassing PBR shadow calculations to achieve a holographic/AR aesthetic.
 
 ### Atmosphere & Immersion
+
 `map.setFog()` with a dark blue `horizon-blend` hides the flat-map edge, completing the illusion of an immersive AR environment at the edge of the viewport.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16 (App Router) |
-| Map Engine | Mapbox GL JS v3 + react-map-gl v8 |
-| State Management | Zustand v5 |
-| Animations | Framer Motion |
-| Geospatial | @turf/buffer, @turf/helpers |
-| Styling | Tailwind CSS v4 |
-| Notifications | Sonner |
-| Deployment | Vercel |
+| Layer            | Technology                        |
+| ---------------- | --------------------------------- |
+| Framework        | Next.js 16 (App Router)           |
+| Map Engine       | Mapbox GL JS v3 + react-map-gl v8 |
+| State Management | Zustand v5                        |
+| Animations       | Framer Motion                     |
+| Geospatial       | @turf/buffer, @turf/helpers       |
+| Styling          | Tailwind CSS v4                   |
+| Notifications    | Sonner                            |
+| Deployment       | Vercel                            |
 
 ---
 
@@ -123,16 +128,44 @@ utils/                  # Bearing, distance, fog config helpers
 ```bash
 git clone https://github.com/ripunjkashyap-a11y/campus-navigation-poc.git
 cd campus-navigation-poc
-npm install
+bun install
 
-# Create .env.local with your Mapbox token
-echo "NEXT_PUBLIC_MAPBOX_TOKEN=pk.your_token_here" > .env.local
+# Copy .env.example to .env.local and fill in real values
+cp .env.example .env.local
 
-npm run dev
+bun run dev
 # → http://localhost:3000
 ```
 
 Requires a free [Mapbox account](https://account.mapbox.com/) and public token.
+Missing/invalid env vars fail fast with a readable error (see `utils/env.ts`).
+
+### Scripts
+
+| Command                                   | What it does                                                       |
+| ----------------------------------------- | ------------------------------------------------------------------ |
+| `bun run dev`                             | Start dev server                                                   |
+| `bun run build` / `bun run start`         | Production build / serve                                           |
+| `bun run test`                            | Unit tests (Vitest)                                                |
+| `bun run test:e2e`                        | E2E tests (Playwright, needs `bun run start` — auto-started in CI) |
+| `bun run test:coverage`                   | Unit tests with coverage                                           |
+| `bun run lint` / `bun run typecheck`      | ESLint / `tsc --noEmit`                                            |
+| `bun run format` / `bun run format:check` | Prettier write / check                                             |
+
+### Docker
+
+```bash
+docker compose up --build
+# → http://localhost:3000
+```
+
+Images are also published to GHCR on every `main` push (see `.github/workflows/ci.yml`).
+
+### Observability
+
+- `GET /api/health` — liveness probe (`{ status: "ok", uptime, timestamp }`)
+- `utils/logger.ts` — JSON structured logs; `error()` also forwards to Sentry
+- Set `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` to enable Sentry (disabled when blank)
 
 ---
 

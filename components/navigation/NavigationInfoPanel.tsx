@@ -9,7 +9,8 @@ import { LOCATION_ICONS } from "@/constants/locationIcons";
 import { formatDistance, formatDuration } from "@/utils/formatDistance";
 
 export function NavigationInfoPanel() {
-  const { selectedDestination, routeData, viewMode, setViewMode, clearNavigation } = useNavigationStore();
+  const { selectedDestination, routeData, viewMode, setViewMode, clearNavigation } =
+    useNavigationStore();
   const progress = useRouteProgress();
 
   const location = selectedDestination
@@ -25,7 +26,7 @@ export function NavigationInfoPanel() {
   const liveDistance = progress?.remainingDistanceM ?? routeData?.distance ?? 0;
   const liveDuration = progress
     ? routeData!.duration * (1 - progress.progressRatio)
-    : routeData?.duration ?? 0;
+    : (routeData?.duration ?? 0);
 
   return (
     <AnimatePresence>
@@ -34,11 +35,11 @@ export function NavigationInfoPanel() {
           initial={{ y: 160, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 160, opacity: 0 }}
-          transition={{ 
-            type: "spring", 
-            damping: 24, 
+          transition={{
+            type: "spring",
+            damping: 24,
             stiffness: 220,
-            mass: 0.8
+            mass: 0.8,
           }}
           className="absolute bottom-0 left-0 right-0 z-40 px-4 pb-8"
         >
@@ -47,12 +48,16 @@ export function NavigationInfoPanel() {
             style={{
               background: "rgba(9, 19, 40, 0.5)",
               border: "1px solid rgba(133, 173, 255, 0.1)",
-              boxShadow: "0 24px 60px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.05)",
+              boxShadow:
+                "0 24px 60px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.05)",
             }}
           >
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-1">
-              <div className="w-10 h-1 rounded-full" style={{ background: "rgba(133,173,255,0.2)" }} />
+              <div
+                className="w-10 h-1 rounded-full"
+                style={{ background: "rgba(133,173,255,0.2)" }}
+              />
             </div>
             <div className="p-4 sm:p-6">
               {/* Destination header — Editorial scale */}
@@ -73,11 +78,22 @@ export function NavigationInfoPanel() {
                 </button>
                 <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner"
-                  style={{ background: location.color + "15", border: `1px solid ${location.color}20` }}
+                  style={{
+                    background: location.color + "15",
+                    border: `1px solid ${location.color}20`,
+                  }}
                 >
                   {(() => {
                     const Icon = LOCATION_ICONS[location.id] ?? Building2;
-                    return <Icon size={22} style={{ color: location.color, filter: `drop-shadow(0 0 8px ${location.color}40)` }} />;
+                    return (
+                      <Icon
+                        size={22}
+                        style={{
+                          color: location.color,
+                          filter: `drop-shadow(0 0 8px ${location.color}40)`,
+                        }}
+                      />
+                    );
                   })()}
                 </div>
                 <div>
@@ -91,14 +107,15 @@ export function NavigationInfoPanel() {
                     className="text-[11px] mt-1 font-bold opacity-70"
                     style={{ color: "var(--on-surface-muted)", fontFamily: "var(--font-inter)" }}
                   >
-                    {formatDistance(liveDistance)} <span className="opacity-30">·</span> {formatDuration(liveDuration)}
+                    {formatDistance(liveDistance)} <span className="opacity-30">·</span>{" "}
+                    {formatDuration(liveDuration)}
                   </p>
                 </div>
               </motion.div>
 
               {/* Action buttons — route-overview only */}
               {viewMode === "route-overview" && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
@@ -111,7 +128,7 @@ export function NavigationInfoPanel() {
                       background: "linear-gradient(135deg, var(--primary), var(--primary-dim))",
                       color: "#060e20",
                       fontFamily: "var(--font-inter)",
-                      boxShadow: "0 8px 16px rgba(133, 173, 255, 0.25)"
+                      boxShadow: "0 8px 16px rgba(133, 173, 255, 0.25)",
                     }}
                   >
                     <Navigation size={16} />
@@ -124,7 +141,7 @@ export function NavigationInfoPanel() {
                       background: "linear-gradient(135deg, var(--secondary), var(--secondary-dim))",
                       color: "var(--on-surface)",
                       fontFamily: "var(--font-inter)",
-                      boxShadow: "0 8px 16px rgba(172, 138, 255, 0.25)"
+                      boxShadow: "0 8px 16px rgba(172, 138, 255, 0.25)",
                     }}
                   >
                     <Radio size={16} />

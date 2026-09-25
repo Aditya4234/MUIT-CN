@@ -75,9 +75,7 @@ export function UserLocationMarker({ mode, bearing = 0 }: UserLocationMarkerProp
 
   // Arrow direction: device compass → travel direction → route bearing.
   const arrowRotation =
-    heading != null && !Number.isNaN(heading)
-      ? heading
-      : display.bearing ?? bearing;
+    heading != null && !Number.isNaN(heading) ? heading : (display.bearing ?? bearing);
 
   // IP fixes are coarse (city-level) — orange marker distinguishes them from GPS
   const dotColor = isIp ? "#f59e0b" : isLive ? "#85adff" : "#94a3b8";
@@ -90,19 +88,11 @@ export function UserLocationMarker({ mode, bearing = 0 }: UserLocationMarkerProp
 
   // Accuracy circle: GPS metres are shown near 1:1 (clamped); the coarse
   // IP fix (±5 km) gets a fixed dashed ring so it doesn't cover the map.
-  const accuracyRadiusPx =
-    accuracy != null
-      ? isIp
-        ? 60
-        : Math.min(Math.max(accuracy, 8), 80)
-      : 0;
+  const accuracyRadiusPx = accuracy != null ? (isIp ? 60 : Math.min(Math.max(accuracy, 8), 80)) : 0;
 
   return (
     <Marker longitude={display.lng} latitude={display.lat} anchor="center">
-      <div
-        className="relative flex items-center justify-center"
-        title={title}
-      >
+      <div className="relative flex items-center justify-center" title={title}>
         {/* Accuracy circle — only when we have a live fix */}
         {isLive && accuracyRadiusPx > 0 && (
           <div
@@ -120,10 +110,20 @@ export function UserLocationMarker({ mode, bearing = 0 }: UserLocationMarkerProp
 
         {isNavMode ? (
           <div
-            style={{ transform: `rotate(${arrowRotation}deg)`, transition: "transform 0.3s linear" }}
+            style={{
+              transform: `rotate(${arrowRotation}deg)`,
+              transition: "transform 0.3s linear",
+            }}
             className="w-8 h-8 flex items-center justify-center drop-shadow-lg"
           >
-            <svg viewBox="0 0 24 24" fill={dotColor} stroke="#060e20" strokeWidth="1.5" width="32" height="32">
+            <svg
+              viewBox="0 0 24 24"
+              fill={dotColor}
+              stroke="#060e20"
+              strokeWidth="1.5"
+              width="32"
+              height="32"
+            >
               <polygon points="12,2 20,20 12,16 4,20" />
             </svg>
           </div>
@@ -131,7 +131,9 @@ export function UserLocationMarker({ mode, bearing = 0 }: UserLocationMarkerProp
           <div className="relative flex items-center justify-center">
             <div
               className={`absolute w-10 h-10 rounded-full ${isLocating ? "animate-ping" : ""}`}
-              style={{ background: isIp ? "rgba(245, 158, 11, 0.25)" : "rgba(133, 173, 255, 0.25)" }}
+              style={{
+                background: isIp ? "rgba(245, 158, 11, 0.25)" : "rgba(133, 173, 255, 0.25)",
+              }}
             />
             <div
               className={`w-4 h-4 rounded-full shadow-lg ${isLive ? "" : "opacity-60"}`}

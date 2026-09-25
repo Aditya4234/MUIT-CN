@@ -28,11 +28,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${bricolage.variable} ${inter.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col" style={{ background: "#060e20", color: "#dee5ff" }}>
+    <html lang="en" className={`${bricolage.variable} ${inter.variable} h-full antialiased`}>
+      <body
+        className="min-h-full flex flex-col"
+        style={{ background: "#060e20", color: "#dee5ff" }}
+      >
         <ClerkProvider>
           <ServiceWorkerCleanup />
           {children}

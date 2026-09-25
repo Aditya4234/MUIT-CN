@@ -8,7 +8,7 @@ import { useNavigationStore } from "@/store/navigationStore";
 
 // Design system secondary color for all map destination markers
 const MARKER_COLOR = "#ac8aff";
-const MARKER_GLOW  = "rgba(172, 138, 255, 0.35)";
+const MARKER_GLOW = "rgba(172, 138, 255, 0.35)";
 const MARKER_GLOW_STRONG = "rgba(172, 138, 255, 0.6)";
 
 interface DestinationPinProps {
@@ -18,7 +18,8 @@ interface DestinationPinProps {
 
 export function DestinationPin({ location, onSelect }: DestinationPinProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const { viewMode, selectedDestination, hoveredLocation, setHoveredLocation } = useNavigationStore();
+  const { viewMode, selectedDestination, hoveredLocation, setHoveredLocation } =
+    useNavigationStore();
 
   const isSelected = selectedDestination === location.id;
   const isSidebarHovered = hoveredLocation === location.id;
@@ -28,7 +29,7 @@ export function DestinationPin({ location, onSelect }: DestinationPinProps) {
   if (viewMode === "ar-simulation") return null;
 
   const dotSize = isSelected ? 14 : 10;
-  const scale   = isSelected ? 1.45 : isActive ? 1.2 : 1;
+  const scale = isSelected ? 1.45 : isActive ? 1.2 : 1;
 
   return (
     <Marker
@@ -44,8 +45,14 @@ export function DestinationPin({ location, onSelect }: DestinationPinProps) {
         animate={{ scale }}
         transition={{ type: "spring", stiffness: 380, damping: 22 }}
         style={{ transformOrigin: "bottom center" }}
-        onMouseEnter={() => { setIsHovered(true); setHoveredLocation(location.id); }}
-        onMouseLeave={() => { setIsHovered(false); setHoveredLocation(null); }}
+        onMouseEnter={() => {
+          setIsHovered(true);
+          setHoveredLocation(location.id);
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          setHoveredLocation(null);
+        }}
         className="flex flex-col items-center cursor-pointer"
       >
         {/* Floating label pill */}

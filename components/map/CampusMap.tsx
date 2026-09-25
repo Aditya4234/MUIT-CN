@@ -55,7 +55,7 @@ function fitRouteBounds(
 export function CampusMap() {
   const mapRef = useRef<MapRef>(null);
   const arMarkersRef = useRef<mapboxgl.Marker[]>([]);
-  const transitioningRef = useRef(false);  // guard against rapid mode switches
+  const transitioningRef = useRef(false); // guard against rapid mode switches
   const lastRouteOriginRef = useRef<{ lat: number; lng: number } | null>(null);
   const [isSatellite, setIsSatellite] = useState(false);
   const [loadingRoute, setLoadingRoute] = useState(false);
@@ -100,13 +100,13 @@ export function CampusMap() {
     const update = () => setMapBearing(map.getBearing());
     update();
     map.on("rotate", update);
-    return () => { map.off("rotate", update); };
+    return () => {
+      map.off("rotate", update);
+    };
   }, [viewMode]);
 
   const dest = CAMPUS_LOCATIONS.find((l) => l.id === selectedDestination);
-  const destBearing = dest
-    ? calculateBearing(origin.lat, origin.lng, dest.lat, dest.lng)
-    : 0;
+  const destBearing = dest ? calculateBearing(origin.lat, origin.lng, dest.lat, dest.lng) : 0;
 
   // Mode 4: arrow points toward destination relative to current camera bearing.
   // Mode 3: map is rotated to firstStepBearing, so 0° points forward.
@@ -123,7 +123,9 @@ export function CampusMap() {
     if (!map) return;
     const onDragStart = () => setFollowingUser(false);
     map.on("dragstart", onDragStart);
-    return () => { map.off("dragstart", onDragStart); };
+    return () => {
+      map.off("dragstart", onDragStart);
+    };
   }, [isNavigating, setFollowingUser]);
 
   // Resume follow mode whenever (re-)entering a navigation view
@@ -147,7 +149,10 @@ export function CampusMap() {
 
     if (!isFirstFetch) {
       const movedSinceRoute = haversineDistance(
-        lastOrigin.lat, lastOrigin.lng, origin.lat, origin.lng
+        lastOrigin.lat,
+        lastOrigin.lng,
+        origin.lat,
+        origin.lng
       );
       const offRoute = isOffRoute(progress, OFF_ROUTE_THRESHOLD_M);
       // On-path steps (even 10–50 m) need no refetch — the displayed path
@@ -223,7 +228,9 @@ export function CampusMap() {
         cam.position = position;
         cam.setPitchBearing(85, map.getBearing());
         map.setFreeCameraOptions(cam);
-      } catch { /* ignore — map may not be ready */ }
+      } catch {
+        /* ignore — map may not be ready */
+      }
       return;
     }
 
@@ -279,10 +286,7 @@ export function CampusMap() {
       : [...CAMPUS_LOCATIONS];
 
     locations.forEach((loc) => {
-      const dist = haversineDistance(
-        origin.lat, origin.lng,
-        loc.lat, loc.lng
-      );
+      const dist = haversineDistance(origin.lat, origin.lng, loc.lat, loc.lng);
 
       const el = document.createElement("div");
       el.className = "ar-nav-arrow";
@@ -318,10 +322,20 @@ export function CampusMap() {
     if (viewMode === "2d-map") {
       if (transitioningRef.current) map.stop();
       transitioningRef.current = true;
-      map.once("moveend", () => { transitioningRef.current = false; });
+      map.once("moveend", () => {
+        transitioningRef.current = false;
+      });
       map.easeTo({ pitch: 0, bearing: 0, zoom: 15, duration: 1500 });
-      try { map.setFog({}); } catch { /* ignore */ }
-      try { map.setTerrain(null); } catch { /* ignore */ }
+      try {
+        map.setFog({});
+      } catch {
+        /* ignore */
+      }
+      try {
+        map.setTerrain(null);
+      } catch {
+        /* ignore */
+      }
       map.dragPan.enable();
       map.scrollZoom.enable();
       return;
@@ -331,16 +345,26 @@ export function CampusMap() {
 
     // Ignore if a transition is already in flight — prevents rapid-click queuing
     if (transitioningRef.current) {
-      map.stop();  // cancel any in-progress easeTo
+      map.stop(); // cancel any in-progress easeTo
     }
     transitioningRef.current = true;
-    map.once("moveend", () => { transitioningRef.current = false; });
+    map.once("moveend", () => {
+      transitioningRef.current = false;
+    });
 
     const destLoc = CAMPUS_LOCATIONS.find((l) => l.id === selectedDestination);
 
     if (viewMode === "route-overview" && destLoc) {
-      try { map.setTerrain(null); } catch { /* ignore */ }
-      try { map.setFog({}); } catch { /* ignore */ }
+      try {
+        map.setTerrain(null);
+      } catch {
+        /* ignore */
+      }
+      try {
+        map.setFog({});
+      } catch {
+        /* ignore */
+      }
       fitRouteBounds(map, origin, destLoc);
       map.dragPan.enable();
       map.scrollZoom.enable();
@@ -350,10 +374,23 @@ export function CampusMap() {
       map.resize();
       // Set terrain before camera animation so it doesn't interrupt easeTo
       if (!map.getSource("mapbox-dem")) {
-        map.addSource("mapbox-dem", { type: "raster-dem", url: "mapbox://mapbox.mapbox-terrain-dem-v1", tileSize: 512, maxzoom: 14 });
+        map.addSource("mapbox-dem", {
+          type: "raster-dem",
+          url: "mapbox://mapbox.mapbox-terrain-dem-v1",
+          tileSize: 512,
+          maxzoom: 14,
+        });
       }
-      try { map.setTerrain({ source: "mapbox-dem", exaggeration: 1.5 }); } catch { /* ignore */ }
-      try { map.setFog({}); } catch { /* ignore */ }
+      try {
+        map.setTerrain({ source: "mapbox-dem", exaggeration: 1.5 });
+      } catch {
+        /* ignore */
+      }
+      try {
+        map.setFog({});
+      } catch {
+        /* ignore */
+      }
       map.easeTo({
         pitch: 60,
         bearing: firstStepBearing,
@@ -368,7 +405,11 @@ export function CampusMap() {
       map.resize();
       // No terrain in AR mode: MercatorCoordinate altitude is above sea level, and
       // terrain exaggeration would push the ground mesh above the camera at 1.7 m.
-      try { map.setTerrain(null); } catch { /* ignore */ }
+      try {
+        map.setTerrain(null);
+      } catch {
+        /* ignore */
+      }
       map.setFog(arFog);
       map.easeTo({
         pitch: 85,
@@ -380,10 +421,7 @@ export function CampusMap() {
       // setFreeCameraOptions is instantaneous — doing it inside moveend avoids a
       // jarring mid-animation jump.
       map.once("moveend", () => {
-        const position = mapboxgl.MercatorCoordinate.fromLngLat(
-          [origin.lng, origin.lat],
-          1.7
-        );
+        const position = mapboxgl.MercatorCoordinate.fromLngLat([origin.lng, origin.lat], 1.7);
         const cam = map.getFreeCameraOptions();
         cam.position = position;
         cam.setPitchBearing(85, map.getBearing());
@@ -400,17 +438,18 @@ export function CampusMap() {
     const loc = useNavigationStore.getState().userLocation;
     setFollowingUser(true);
     if (map && loc) {
-      map.easeTo({ center: [loc.lng, loc.lat], zoom: viewMode === "ar-simulation" ? 20 : 18, duration: 1000 });
+      map.easeTo({
+        center: [loc.lng, loc.lat],
+        zoom: viewMode === "ar-simulation" ? 20 : 18,
+        duration: 1000,
+      });
     }
   }, [setFollowingUser, viewMode]);
 
   const isFullscreen = viewMode === "turn-by-turn" || viewMode === "ar-simulation";
 
   return (
-    <div
-      className="relative flex-1"
-      style={{ width: "100%", height: "100vh" }}
-    >
+    <div className="relative flex-1" style={{ width: "100%", height: "100vh" }}>
       <LoadingOverlay isLoading={loadingRoute} />
 
       {/* Mobile Menu Toggle */}
@@ -441,11 +480,7 @@ export function CampusMap() {
         <RouteLayer />
         <UserLocationMarker mode={viewMode} bearing={arrowBearing} />
         {CAMPUS_LOCATIONS.map((loc) => (
-          <DestinationPin
-            key={loc.id}
-            location={loc}
-            onSelect={selectDestination}
-          />
+          <DestinationPin key={loc.id} location={loc} onSelect={selectDestination} />
         ))}
       </Map>
 

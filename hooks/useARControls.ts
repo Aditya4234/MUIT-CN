@@ -13,10 +13,7 @@ function setARBearing(map: mapboxgl.Map, bearing: number) {
   map.setFreeCameraOptions(cam);
 }
 
-export function useARControls(
-  mapRef: React.RefObject<MapRef | null>,
-  isActive: boolean
-) {
+export function useARControls(mapRef: React.RefObject<MapRef | null>, isActive: boolean) {
   useEffect(() => {
     if (!isActive) return;
 
@@ -40,7 +37,7 @@ export function useARControls(
     }
     function onMouseMove(e: MouseEvent) {
       if (!isDragging) return;
-      const delta = (e.clientX - dragStartX) / window.innerWidth * 360;
+      const delta = ((e.clientX - dragStartX) / window.innerWidth) * 360;
       setARBearing(m, dragStartBearing - delta);
     }
     function onMouseUp() {
@@ -61,7 +58,7 @@ export function useARControls(
       startBearing = m.getBearing();
     }
     function onTouchMove(e: TouchEvent) {
-      const delta = (e.touches[0].clientX - touchStartX) / window.innerWidth * 360;
+      const delta = ((e.touches[0].clientX - touchStartX) / window.innerWidth) * 360;
       setARBearing(m, startBearing - delta);
     }
 

@@ -17,8 +17,10 @@ function ManeuverIcon({ type, modifier }: { type: string; modifier?: string }) {
   const style = { color: "#ffffff" };
   const cls = "w-6 h-6";
   if (type === "arrive") return <Flag className={cls} style={style} />;
-  if (modifier === "left" || modifier === "sharp left") return <CornerUpLeft className={cls} style={style} />;
-  if (modifier === "right" || modifier === "sharp right") return <CornerUpRight className={cls} style={style} />;
+  if (modifier === "left" || modifier === "sharp left")
+    return <CornerUpLeft className={cls} style={style} />;
+  if (modifier === "right" || modifier === "sharp right")
+    return <CornerUpRight className={cls} style={style} />;
   if (modifier === "slight left") return <ArrowUpLeft className={cls} style={style} />;
   if (modifier === "slight right") return <ArrowUpRight className={cls} style={style} />;
   return <ArrowUp className={cls} style={style} />;
@@ -35,9 +37,7 @@ export function TurnByTurnOverlay() {
   // Live remaining distance along the route; falls back to the step estimate.
   const remainingM = progress?.remainingDistanceM ?? step?.distance ?? null;
   const speedKmh =
-    userLocation?.speed != null && userLocation.speed > 0.3
-      ? userLocation.speed * 3.6
-      : null;
+    userLocation?.speed != null && userLocation.speed > 0.3 ? userLocation.speed * 3.6 : null;
 
   return (
     <AnimatePresence>
@@ -61,7 +61,9 @@ export function TurnByTurnOverlay() {
               {/* Maneuver icon — Luminous Glow */}
               <div
                 className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg"
-                style={{ background: "linear-gradient(135deg, var(--primary), var(--primary-dim))" }}
+                style={{
+                  background: "linear-gradient(135deg, var(--primary), var(--primary-dim))",
+                }}
               >
                 <ManeuverIcon type={step.maneuver.type} modifier={step.maneuver.modifier} />
               </div>
@@ -88,10 +90,11 @@ export function TurnByTurnOverlay() {
 
             {/* Next step preview — Tonal separation */}
             {nextStep && nextStep !== step && (
-              <div
-                className="flex items-center gap-3 px-5 py-2.5 bg-white/5 border-t border-white/5"
-              >
-                <span className="text-[10px] font-black uppercase tracking-wider opacity-40" style={{ color: "var(--on-surface-muted)", fontFamily: "var(--font-inter)" }}>
+              <div className="flex items-center gap-3 px-5 py-2.5 bg-white/5 border-t border-white/5">
+                <span
+                  className="text-[10px] font-black uppercase tracking-wider opacity-40"
+                  style={{ color: "var(--on-surface-muted)", fontFamily: "var(--font-inter)" }}
+                >
                   Then:
                 </span>
                 <p

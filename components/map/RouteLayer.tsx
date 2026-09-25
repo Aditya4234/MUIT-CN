@@ -28,10 +28,7 @@ export function RouteLayer() {
   }, [progress, routeData]);
 
   const traveledCoords = useMemo(
-    () =>
-      progress && progress.traveledCoords.length >= 2
-        ? progress.traveledCoords
-        : null,
+    () => (progress && progress.traveledCoords.length >= 2 ? progress.traveledCoords : null),
     [progress]
   );
 

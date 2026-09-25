@@ -22,10 +22,13 @@ export function ARHudOverlay() {
             <div
               key={corner}
               className={`absolute w-8 h-8 sm:w-10 sm:h-10 ${
-                corner === "tl" ? "top-6 left-6 border-t-2 border-l-2" :
-                corner === "tr" ? "top-6 right-6 border-t-2 border-r-2" :
-                corner === "bl" ? "bottom-44 sm:bottom-56 left-6 border-b-2 border-l-2" :
-                "bottom-44 sm:bottom-56 right-6 border-b-2 border-r-2"
+                corner === "tl"
+                  ? "top-6 left-6 border-t-2 border-l-2"
+                  : corner === "tr"
+                    ? "top-6 right-6 border-t-2 border-r-2"
+                    : corner === "bl"
+                      ? "bottom-44 sm:bottom-56 left-6 border-b-2 border-l-2"
+                      : "bottom-44 sm:bottom-56 right-6 border-b-2 border-r-2"
               } rounded-sm`}
               style={{ borderColor: "rgba(172, 138, 255, 0.6)" }}
             />
@@ -57,7 +60,10 @@ export function ARHudOverlay() {
           {/* Subtle scan line animation */}
           <motion.div
             className="absolute left-0 right-0 h-px"
-            style={{ background: "linear-gradient(90deg, transparent, rgba(172,138,255,0.25), transparent)" }}
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, rgba(172,138,255,0.25), transparent)",
+            }}
             animate={{ top: ["10%", "90%", "10%"] }}
             transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
           />
@@ -68,7 +74,11 @@ export function ARHudOverlay() {
             animate={{ opacity: 0 }}
             transition={{ delay: 3, duration: 1.5 }}
             className="absolute left-1/2 -translate-x-1/2 text-xs tracking-wide whitespace-nowrap"
-            style={{ bottom: "15.5rem", color: "rgba(163,170,196,0.6)", fontFamily: "var(--font-inter)" }}
+            style={{
+              bottom: "15.5rem",
+              color: "rgba(163,170,196,0.6)",
+              fontFamily: "var(--font-inter)",
+            }}
           >
             Move mouse or tilt phone to look around
           </motion.p>

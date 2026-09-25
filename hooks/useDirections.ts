@@ -22,22 +22,24 @@ export async function getDirections(
   const route = data.routes[0];
   const leg = route.legs[0];
 
-  const steps: ManeuverStep[] = leg.steps.map((s: {
-    maneuver: { instruction: string; type: string; modifier?: string; bearing_after: number };
-    distance: number;
-    duration: number;
-    geometry: { coordinates: [number, number][] };
-  }) => ({
-    instruction: s.maneuver.instruction,
-    distance: s.distance,
-    duration: s.duration,
-    maneuver: {
-      type: s.maneuver.type,
-      modifier: s.maneuver.modifier,
-      bearing_after: s.maneuver.bearing_after,
-    },
-    coordinates: s.geometry?.coordinates ?? [],
-  }));
+  const steps: ManeuverStep[] = leg.steps.map(
+    (s: {
+      maneuver: { instruction: string; type: string; modifier?: string; bearing_after: number };
+      distance: number;
+      duration: number;
+      geometry: { coordinates: [number, number][] };
+    }) => ({
+      instruction: s.maneuver.instruction,
+      distance: s.distance,
+      duration: s.duration,
+      maneuver: {
+        type: s.maneuver.type,
+        modifier: s.maneuver.modifier,
+        bearing_after: s.maneuver.bearing_after,
+      },
+      coordinates: s.geometry?.coordinates ?? [],
+    })
+  );
 
   return {
     geometry: route.geometry,

@@ -34,8 +34,7 @@ export function useLiveLocation() {
   const ipAttempted = useRef(false);
 
   useEffect(() => {
-    const { setUserLocation, setLocationStatus, setIpInfo } =
-      useNavigationStore.getState();
+    const { setUserLocation, setLocationStatus, setIpInfo } = useNavigationStore.getState();
 
     // Coarse fallback: resolve the caller's city via IP and use it only if
     // it's near campus — a far-away IP fix must NOT become the route origin.
@@ -156,8 +155,11 @@ export function useLiveLocation() {
       (pos) => {
         const { latitude, longitude, accuracy, heading, speed } = pos.coords;
         acceptGpsFix(
-          latitude, longitude,
-          accuracy ?? null, heading ?? null, speed ?? null,
+          latitude,
+          longitude,
+          accuracy ?? null,
+          heading ?? null,
+          speed ?? null,
           pos.timestamp
         );
       },
@@ -192,12 +194,17 @@ export function useLiveLocation() {
         (pos) => {
           const { latitude, longitude, accuracy, heading, speed } = pos.coords;
           acceptGpsFix(
-            latitude, longitude,
-            accuracy ?? null, heading ?? null, speed ?? null,
+            latitude,
+            longitude,
+            accuracy ?? null,
+            heading ?? null,
+            speed ?? null,
             pos.timestamp
           );
         },
-        () => { /* ignore — watchPosition remains the primary source */ },
+        () => {
+          /* ignore — watchPosition remains the primary source */
+        },
         { enableHighAccuracy: false, maximumAge: 10000, timeout: 10000 }
       );
     }, 5000);

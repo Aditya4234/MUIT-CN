@@ -5,10 +5,10 @@ import { Map, Route, Navigation, Radio } from "lucide-react";
 import { useNavigationStore } from "@/store/navigationStore";
 
 const MODES = {
-  "2d-map":         { label: "2D Map",         icon: Map,        accent: "#a3aac4" },
-  "route-overview": { label: "Route Overview",  icon: Route,      accent: "#85adff" },
-  "turn-by-turn":   { label: "Navigating",      icon: Navigation, accent: "#85adff" },
-  "ar-simulation":  { label: "AR Simulation",   icon: Radio,      accent: "#ac8aff" },
+  "2d-map": { label: "2D Map", icon: Map, accent: "#a3aac4" },
+  "route-overview": { label: "Route Overview", icon: Route, accent: "#85adff" },
+  "turn-by-turn": { label: "Navigating", icon: Navigation, accent: "#85adff" },
+  "ar-simulation": { label: "AR Simulation", icon: Radio, accent: "#ac8aff" },
 };
 
 export function ModeIndicator() {
@@ -18,23 +18,31 @@ export function ModeIndicator() {
   const isIp = locationSource === "ip";
   const place = [ipInfo?.city, ipInfo?.region].filter(Boolean).join(", ");
   const gpsColor =
-    locationStatus === "tracking" && !isIp ? "#22c55e" :
-    locationStatus === "tracking" && isIp ? "#f59e0b" :
-    locationStatus === "locating" ? "#f59e0b" :
-    locationStatus === "denied" || locationStatus === "unavailable"
-      ? ipInfo ? "#f59e0b" : "#ef4444" :
-    "#a3aac4";
+    locationStatus === "tracking" && !isIp
+      ? "#22c55e"
+      : locationStatus === "tracking" && isIp
+        ? "#f59e0b"
+        : locationStatus === "locating"
+          ? "#f59e0b"
+          : locationStatus === "denied" || locationStatus === "unavailable"
+            ? ipInfo
+              ? "#f59e0b"
+              : "#ef4444"
+            : "#a3aac4";
   const gpsLabel =
     locationStatus === "tracking" && isIp
       ? `IP ~${place || "unknown"} (±5 km)`
       : locationStatus === "tracking"
         ? `GPS live${userLocation?.accuracy != null ? ` ±${Math.round(userLocation.accuracy)}m` : ""}`
-        : locationStatus === "locating" ? "Locating…"
-        : ipInfo
-          ? `📍 ${place || "unknown"} · ~${ipInfo.distanceFromCampusKm ?? "?"} km from campus`
-          : locationStatus === "denied" ? "GPS denied"
-          : locationStatus === "unavailable" ? "GPS unavailable"
-          : "GPS idle";
+        : locationStatus === "locating"
+          ? "Locating…"
+          : ipInfo
+            ? `📍 ${place || "unknown"} · ~${ipInfo.distanceFromCampusKm ?? "?"} km from campus`
+            : locationStatus === "denied"
+              ? "GPS denied"
+              : locationStatus === "unavailable"
+                ? "GPS unavailable"
+                : "GPS idle";
 
   return (
     <div className="absolute top-4 left-16 md:left-4 z-40 flex flex-col gap-2">

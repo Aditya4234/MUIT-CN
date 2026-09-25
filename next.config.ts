@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs/config";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   devIndicators: false,
   turbopack: {
     resolveAlias: {
@@ -29,7 +31,7 @@ const nextConfig: NextConfig = {
             // Preserved: Google Maps/Routes + Clerk Frontend API entries.
             // Clerk runtime: clerk-telemetry.com (SDK telemetry, observed) +
             //   img.clerk.com (avatar/proxy images fetched via Fetch API, observed).
-            "connect-src 'self' http://localhost:3000 ws://localhost:3000 wss://localhost:3000 http://localhost:8000 http://localhost:8001 https://api.mapbox.com https://events.mapbox.com https://*.tiles.mapbox.com https://maps.googleapis.com https://routes.googleapis.com https://fonts.googleapis.com https://*.clerk.accounts.dev wss://*.clerk.accounts.dev https://*.clerk.dev https://clerk-telemetry.com https://img.clerk.com",
+            "connect-src 'self' http://localhost:3000 ws://localhost:3000 wss://localhost:3000 http://localhost:8000 http://localhost:8001 https://api.mapbox.com https://events.mapbox.com https://*.tiles.mapbox.com https://maps.googleapis.com https://routes.googleapis.com https://fonts.googleapis.com https://*.clerk.accounts.dev wss://*.clerk.accounts.dev https://*.clerk.dev https://clerk-telemetry.com https://img.clerk.com https://*.sentry.io",
             // Mapbox GL JS web workers.
             "worker-src 'self' blob:",
             "child-src 'self' blob:",
@@ -45,4 +47,8 @@ const nextConfig: NextConfig = {
   ],
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // No auth token in CI/local — skip sourcemap upload silently.
+  sourcemaps: { disable: true },
+  silent: true,
+});

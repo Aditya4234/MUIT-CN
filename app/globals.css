@@ -4,29 +4,29 @@
 /* ── Design System: The Luminous Scholar ─────────────────────────────────── */
 :root {
   /* Surface hierarchy */
-  --surface:           #060e20;
-  --surface-low:       #091328;
-  --surface-high:      #141f38;
-  --surface-highest:   #192540;
+  --surface: #060e20;
+  --surface-low: #091328;
+  --surface-high: #141f38;
+  --surface-highest: #192540;
 
   /* Text */
-  --on-surface:        #dee5ff;
-  --on-surface-muted:  #a3aac4;
-  --outline:           #40485d;
+  --on-surface: #dee5ff;
+  --on-surface-muted: #a3aac4;
+  --outline: #40485d;
 
   /* Accents */
-  --primary:           #85adff;
-  --primary-dim:       #6e9fff;
-  --secondary:         #ac8aff;
-  --secondary-dim:     #5516be;
-  --tertiary:          #9bffce;
+  --primary: #85adff;
+  --primary-dim: #6e9fff;
+  --secondary: #ac8aff;
+  --secondary-dim: #5516be;
+  --tertiary: #9bffce;
 }
 
 @theme inline {
   /* Fonts */
   --font-display: var(--font-bricolage);
-  --font-sans:    var(--font-inter);
-  --font-label:   var(--font-inter);
+  --font-sans: var(--font-inter);
+  --font-label: var(--font-inter);
 }
 
 body {
@@ -44,26 +44,49 @@ body {
   padding: 12px 20px;
   color: #dee5ff;
   text-align: center;
-  box-shadow: 0 0 20px rgba(172, 138, 255, 0.25), 0 0 60px rgba(172, 138, 255, 0.08);
+  box-shadow:
+    0 0 20px rgba(172, 138, 255, 0.25),
+    0 0 60px rgba(172, 138, 255, 0.08);
   animation: ar-pulse 2s ease-in-out infinite;
   min-width: 120px;
   pointer-events: none;
 }
 
-.ar-arrow-icon { font-size: 1.75rem; line-height: 1; margin-bottom: 4px; }
-.ar-arrow-label { font-size: 0.875rem; font-weight: 600; letter-spacing: 0.05em; }
-.ar-arrow-distance { font-size: 0.75rem; opacity: 0.75; margin-top: 2px; }
+.ar-arrow-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.ar-arrow-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.ar-arrow-distance {
+  font-size: 0.75rem;
+  opacity: 0.75;
+  margin-top: 2px;
+}
 
 @keyframes ar-pulse {
-  0%, 100% { box-shadow: 0 0 20px rgba(172,138,255,0.25), 0 0 60px rgba(172,138,255,0.08); }
-  50%       { box-shadow: 0 0 40px rgba(172,138,255,0.55), 0 0 80px rgba(172,138,255,0.18); }
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(172, 138, 255, 0.25),
+      0 0 60px rgba(172, 138, 255, 0.08);
+  }
+  50% {
+    box-shadow:
+      0 0 40px rgba(172, 138, 255, 0.55),
+      0 0 80px rgba(172, 138, 255, 0.18);
+  }
 }
 
 /* ── Mapbox popup reset ──────────────────────────────────────────────────── */
 .mapboxgl-popup-content {
   padding: 0 !important;
   border-radius: 12px !important;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
 }
 .mapboxgl-popup-close-button {
   font-size: 18px;

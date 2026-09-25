@@ -78,8 +78,7 @@ export function computeRouteProgress(
   const remainingCoords: LngLat[] = [bestPoint, ...routeCoords.slice(bestSegIdx + 1)];
   const traveledCoords: LngLat[] = [...routeCoords.slice(0, bestSegIdx + 1), bestPoint];
 
-  const segLen = (p: LngLat, q: LngLat) =>
-    haversineDistance(p[1], p[0], q[1], q[0]);
+  const segLen = (p: LngLat, q: LngLat) => haversineDistance(p[1], p[0], q[1], q[0]);
 
   let remainingDistanceM = 0;
   for (let i = 0; i < remainingCoords.length - 1; i++) {
@@ -106,11 +105,7 @@ export function isOffRoute(progress: RouteProgress | null, thresholdM = 35): boo
 }
 
 /** Min distance (metres) from a point to a polyline. */
-function distanceToPolyline(
-  coords: [number, number][],
-  userLat: number,
-  userLng: number
-): number {
+function distanceToPolyline(coords: [number, number][], userLat: number, userLng: number): number {
   if (coords.length === 0) return Infinity;
   if (coords.length === 1) {
     return haversineDistance(userLat, userLng, coords[0][1], coords[0][0]);

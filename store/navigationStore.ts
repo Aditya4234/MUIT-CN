@@ -68,12 +68,11 @@ export const useNavigationStore = create<NavigationState>((set) => ({
     set({ selectedDestination: id, viewMode: "route-overview", isSidebarOpen: false }),
 
   setHoveredLocation: (id) =>
-    set((state) => state.hoveredLocation === id ? state : { hoveredLocation: id }),
+    set((state) => (state.hoveredLocation === id ? state : { hoveredLocation: id })),
 
   setViewMode: (mode) => set({ viewMode: mode }),
 
-  setRouteData: (data) =>
-    set({ routeData: data, navSteps: data.steps, currentStepIndex: 0 }),
+  setRouteData: (data) => set({ routeData: data, navSteps: data.steps, currentStepIndex: 0 }),
 
   setSidebarOpen: (open) => set({ isSidebarOpen: open }),
 
